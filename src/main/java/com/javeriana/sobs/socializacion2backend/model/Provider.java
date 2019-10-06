@@ -6,105 +6,105 @@
 package com.javeriana.sobs.socializacion2backend.model;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author cristianmendi
  */
 public class Provider {
-    private long id;
-    private String name;
-    private boolean system;
-    private EndpointInfo endpoint;
-    private List<Product> products;
-    private List<Quotation> quotations;
-    
-    public Provider(long id,String name,boolean system,EndpointInfo endpoint){
-        this.id=id;
-        this.name=name;
-        this.system=system;
-        this.endpoint=endpoint;
-    }
-    
-    public Provider(){
-    }
 
-    public List<Product> getProducts() {
-        return products;
-    }
+	private long id;
+	private String name;
+	private boolean system;
+	private EndpointInfo endpoint;
+	private List<Product> products;
+	private List<Quotation> quotations;
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
+	public Provider() {
+	}
 
-    public List<Quotation> getQuotations() {
-        return quotations;
-    }
+	public Provider(long id, String name, boolean system, EndpointInfo endpoint) {
+		this.id = id;
+		this.name = name;
+		this.system = system;
+		this.endpoint = endpoint;
+	}
 
-    public void setQuotations(List<Quotation> quotations) {
-        this.quotations = quotations;
-    }
+	public List<Product> getProducts() {
+		return products;
+	}
 
-    public long getId() {
-        return id;
-    }
+	public void setProducts(List<Product> products) {
+		this.products = products;
+	}
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	public List<Quotation> getQuotations() {
+		return quotations;
+	}
 
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
+	public void setQuotations(List<Quotation> quotations) {
+		this.quotations = quotations;
+	}
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+	public long getId() {
+		return id;
+	}
 
-    /**
-     * @return the system
-     */
-    public boolean isSystem() {
-        return system;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    /**
-     * @param system the system to set
-     */
-    public void setSystem(boolean system) {
-        this.system = system;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * @return the endpoint
-     */
-    public EndpointInfo getEndpoint() {
-        return endpoint;
-    }
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    /**
-     * @param endpoint the endpoint to set
-     */
-    public void setEndpoint(EndpointInfo endpoint) {
-        this.endpoint = endpoint;
-    }
-    
-    public boolean inCatalog(String productName){
-        System.out.println("inCatalog");
-        return this.products.stream().anyMatch((product) -> (product.getName().equals(productName)));
-    }
-    
-        @Override
-    public String toString() {
-        return "Provider{" + "id=" + id + ", name=" + name + ", system=" + system + ", endpoint=" + endpoint + ", products=" + products + '}';
-    }
-    
-    
+	/**
+	 * @return the system
+	 */
+	public boolean isSystem() {
+		return system;
+	}
+
+	/**
+	 * @param system the system to set
+	 */
+	public void setSystem(boolean system) {
+		this.system = system;
+	}
+
+	/**
+	 * @return the endpoint
+	 */
+	public EndpointInfo getEndpoint() {
+		return endpoint;
+	}
+
+	/**
+	 * @param endpoint the endpoint to set
+	 */
+	public void setEndpoint(EndpointInfo endpoint) {
+		this.endpoint = endpoint;
+	}
+
+	public boolean inCatalog(String productName) {
+		System.out.println("inCatalog");
+		return this.products.stream().anyMatch((product) -> (product.getName().equals(productName)));
+	}
+
+	@Override
+	public String toString() {
+		return "Provider{" + "id=" + id + ", name=" + name + ", system=" + system + ", endpoint=" + endpoint
+				+ ", products=" + products + '}';
+	}
+
 }
