@@ -13,98 +13,105 @@ import java.util.List;
  */
 public class Provider {
 
-	private long id;
-	private String name;
-	private boolean system;
-	private EndpointInfo endpoint;
-	private List<Product> products;
-	private List<Quotation> quotations;
+    private long id;
+    private String name;
+    private boolean system;
+    private EndpointInfo endpoint;
+    private List<Product> products;
+    private List<Quotation> quotations;
 
-	public Provider() {
-	}
+    public Provider() {
+    }
 
-	public Provider(long id, String name, boolean system, EndpointInfo endpoint) {
-		this.id = id;
-		this.name = name;
-		this.system = system;
-		this.endpoint = endpoint;
-	}
+    public Provider(long id, String name, boolean system, EndpointInfo endpoint) {
+        this.id = id;
+        this.name = name;
+        this.system = system;
+        this.endpoint = endpoint;
+    }
+    
+    public Provider(long id, String name, boolean system) {
+        this.id = id;
+        this.name = name;
+        this.system = system;
+    }
 
-	public List<Product> getProducts() {
-		return products;
-	}
 
-	public void setProducts(List<Product> products) {
-		this.products = products;
-	}
+    public List<Product> getProducts() {
+        return products;
+    }
 
-	public List<Quotation> getQuotations() {
-		return quotations;
-	}
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
 
-	public void setQuotations(List<Quotation> quotations) {
-		this.quotations = quotations;
-	}
+    public List<Quotation> getQuotations() {
+        return quotations;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public void setQuotations(List<Quotation> quotations) {
+        this.quotations = quotations;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	/**
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * @return the system
-	 */
-	public boolean isSystem() {
-		return system;
-	}
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	/**
-	 * @param system the system to set
-	 */
-	public void setSystem(boolean system) {
-		this.system = system;
-	}
+    /**
+     * @return the system
+     */
+    public boolean isSystem() {
+        return system;
+    }
 
-	/**
-	 * @return the endpoint
-	 */
-	public EndpointInfo getEndpoint() {
-		return endpoint;
-	}
+    /**
+     * @param system the system to set
+     */
+    public void setSystem(boolean system) {
+        this.system = system;
+    }
 
-	/**
-	 * @param endpoint the endpoint to set
-	 */
-	public void setEndpoint(EndpointInfo endpoint) {
-		this.endpoint = endpoint;
-	}
+    /**
+     * @return the endpoint
+     */
+    public EndpointInfo getEndpoint() {
+        return endpoint;
+    }
 
-	public boolean inCatalog(String productName) {
-		System.out.println("inCatalog");
-		return this.products.stream().anyMatch((product) -> (product.getName().equals(productName)));
-	}
+    /**
+     * @param endpoint the endpoint to set
+     */
+    public void setEndpoint(EndpointInfo endpoint) {
+        this.endpoint = endpoint;
+    }
 
-	@Override
-	public String toString() {
-		return "Provider{" + "id=" + id + ", name=" + name + ", system=" + system + ", endpoint=" + endpoint
-				+ ", products=" + products + '}';
-	}
+    public boolean inCatalog(String productName) {
+        System.out.println("inCatalog");
+        return this.products.stream().anyMatch((product) -> (product.getName().equals(productName)));
+    }
+
+    @Override
+    public String toString() {
+        return "Provider{" + "id=" + id + ", name=" + name + ", system=" + system + ", endpoint=" + endpoint
+                + ", products=" + products + '}';
+    }
 
 }

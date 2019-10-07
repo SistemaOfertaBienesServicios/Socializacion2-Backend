@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.javeriana.sobs.socializacion2backend.exception.SocializacionException;
 import com.javeriana.sobs.socializacion2backend.model.Product;
 import com.javeriana.sobs.socializacion2backend.model.Provider;
+import com.javeriana.sobs.socializacion2backend.model.Quotation;
 import com.javeriana.sobs.socializacion2backend.model.Role;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.LoginData;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.QuotationsWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.ResponseWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.RoleWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.StatusInfo;
@@ -38,14 +40,14 @@ public class SocializacionController extends BaseController {
             throw handleException(ex);
         }
     }
-    
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<ResponseWrapper> loginUser(@RequestBody LoginData loginData) throws SocializacionException {
         try {
-        	RoleWrapper roleWrapperResponse = socializacionServiceImpl.validateLoginUser(loginData.getUsername(), loginData.getPassword());
-        	if(roleWrapperResponse == null) {
-        		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        	}
+            RoleWrapper roleWrapperResponse = socializacionServiceImpl.validateLoginUser(loginData.getUsername(), loginData.getPassword());
+            if (roleWrapperResponse == null) {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
             return new ResponseEntity<>(generateResponseWrapper(roleWrapperResponse), HttpStatus.OK);
         } catch (Exception ex) {
             throw handleException(ex);
@@ -61,14 +63,10 @@ public class SocializacionController extends BaseController {
             throw handleException(ex);
         }
     }
-    
 
     @RequestMapping(path = "/register/{token}", method = RequestMethod.POST)
     public ResponseEntity<?> registerProvider(@RequestBody Provider newProvider, @PathVariable("token") String token) {
         try {
-            //registrar dato
-            System.out.println(newProvider);
-            System.out.println(token);
             boolean auth = socializacionServiceImpl.validateToken(token);
             if (auth) {
                 socializacionServiceImpl.registerProvider(newProvider);
@@ -81,4 +79,27 @@ public class SocializacionController extends BaseController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
+
+    @RequestMapping(path = "/quote/{username}", method = RequestMethod.POST)
+    public ResponseEntity<?> makeQuotes(@RequestBody QuotationsWrapper quotationData)  {
+        try {
+            List<Quotation> quotations = socializacionServiceImpl.makeQuotes(quotationData.getProducts(),quotationData.getUsername());
+            return new ResponseEntity<>(quotations,HttpStatus.CREATED);
+        } catch (SQLException ex) {
+            Logger.getLogger(SocializacionController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @RequestMapping(path = "/saveQuote", method = RequestMethod.POST)
+    public ResponseEntity<?> saveQuotes(@RequestBody Quotation quotation)  {
+        try {
+            Quotation newQuotation = socializacionServiceImpl.saveQuotation(quotation);
+            return new ResponseEntity<>(newQuotation,HttpStatus.CREATED);
+        } catch (SQLException ex) {
+            Logger.getLogger(SocializacionController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
