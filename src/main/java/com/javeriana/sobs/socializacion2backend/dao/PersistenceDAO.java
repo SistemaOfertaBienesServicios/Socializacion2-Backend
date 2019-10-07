@@ -1,5 +1,6 @@
 package com.javeriana.sobs.socializacion2backend.dao;
 
+import com.javeriana.sobs.socializacion2backend.model.Product;
 import com.javeriana.sobs.socializacion2backend.model.Provider;
 import java.sql.SQLException;
 import java.util.List;
@@ -13,4 +14,5 @@ public interface PersistenceDAO {
     public boolean validateToken(String token) throws SQLException;
     
     public User validateLoginUser(String username, String password) throws SQLException;
+    public boolean updateOrCreateProviderProducts(String provider, List<Product> products)  throws SQLException;
 }

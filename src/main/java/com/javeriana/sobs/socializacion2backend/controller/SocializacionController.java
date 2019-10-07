@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.javeriana.sobs.socializacion2backend.exception.SocializacionException;
+import com.javeriana.sobs.socializacion2backend.model.Product;
 import com.javeriana.sobs.socializacion2backend.model.Provider;
 import com.javeriana.sobs.socializacion2backend.model.Role;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.LoginData;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.ResponseWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.RoleWrapper;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.StatusInfo;
 import com.javeriana.sobs.socializacion2backend.service.SocializacionService;
 
 @Controller
@@ -44,6 +46,16 @@ public class SocializacionController extends BaseController {
         	if(roleWrapperResponse == null) {
         		return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         	}
+            return new ResponseEntity<>(generateResponseWrapper(roleWrapperResponse), HttpStatus.OK);
+        } catch (Exception ex) {
+            throw handleException(ex);
+        }
+    }
+    
+    @RequestMapping(value = "/products/{providerId}", method = RequestMethod.PUT)
+    public ResponseEntity<ResponseWrapper> createProducts(@PathVariable("providerId") String providerId, @RequestBody List<Product> products) throws SocializacionException {
+        try {
+        	StatusInfo roleWrapperResponse = socializacionServiceImpl.updateOrCreateProviderProducts(providerId, products);
             return new ResponseEntity<>(generateResponseWrapper(roleWrapperResponse), HttpStatus.OK);
         } catch (Exception ex) {
             throw handleException(ex);
