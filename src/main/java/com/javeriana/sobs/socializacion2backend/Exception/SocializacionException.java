@@ -1,4 +1,4 @@
-package com.javeriana.sobs.socializacion2backend.Exception;
+package com.javeriana.sobs.socializacion2backend.exception;
 
 public class SocializacionException extends Exception {
 

@@ -1,17 +1,23 @@
 package com.javeriana.sobs.socializacion2backend.dao;
 
 import com.javeriana.sobs.socializacion2backend.model.Provider;
+
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
 import com.javeriana.sobs.socializacion2backend.model.Role;
+import com.javeriana.sobs.socializacion2backend.model.User;
 
 @Component
 public class PersistenceDAOImpl implements PersistenceDAO {
@@ -47,4 +53,20 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         System.out.println("token: " + token);
         return token.equals("valido");
     }
+
+	@Override
+	public User validateLoginUser(String username, String password) throws SQLException {
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.User WHERE username=? AND password=?");
+        statement.setString(1, username);
+        statement.setString(2, password);
+        ResultSet resultSet = statement.executeQuery();
+        User user = null;
+        while (resultSet.next()) {
+        	user = new User();
+        	user.setRole(resultSet.getString("role"));
+        }
+        return user;
+        
+	}
 }

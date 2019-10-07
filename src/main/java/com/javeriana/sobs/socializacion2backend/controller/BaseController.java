@@ -2,8 +2,9 @@ package com.javeriana.sobs.socializacion2backend.controller;
 
 import java.sql.SQLException;
 
-import com.javeriana.sobs.socializacion2backend.Exception.SocializacionErrorCode;
-import com.javeriana.sobs.socializacion2backend.Exception.SocializacionException;
+import com.javeriana.sobs.socializacion2backend.exception.SocializacionErrorCode;
+import com.javeriana.sobs.socializacion2backend.exception.SocializacionException;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.ResponseWrapper;
 
 public abstract class BaseController {
 	
@@ -16,4 +17,10 @@ public abstract class BaseController {
             return new SocializacionException(exception.getMessage(), SocializacionErrorCode.GENERAL);
         }
     }
+	
+	protected ResponseWrapper generateResponseWrapper(Object data) {
+		ResponseWrapper responseWrapper = new ResponseWrapper();
+		responseWrapper.setData(data);
+		return responseWrapper;
+	}
 }
