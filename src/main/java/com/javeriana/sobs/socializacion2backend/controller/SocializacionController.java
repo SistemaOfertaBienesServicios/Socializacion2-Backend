@@ -52,4 +52,6 @@ public class SocializacionController extends BaseController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
+    
+    
 }

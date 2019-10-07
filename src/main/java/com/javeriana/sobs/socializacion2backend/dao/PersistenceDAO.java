@@ -10,4 +10,7 @@ public interface PersistenceDAO {
     public List<Role> getRoles() throws SQLException;
     public Provider registerProvider(Provider newProvider) throws SQLException;
     public boolean validateToken(String token) throws SQLException;
+
+    public List<Provider> getProviders() throws SQLException;
+
 }

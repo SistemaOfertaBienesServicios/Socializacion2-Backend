@@ -15,11 +15,16 @@ public class EndpointInfo {
 
 	private long id;
 	private String endpoint;
-	private List<String> endpointParameters;
+	private String endpointParameters;
+
+        public EndpointInfo(long id, String endpoint, String endpointParameters) {
+            this.id = id;
+            this.endpoint = endpoint;
+            this.endpointParameters = endpointParameters;
+        }
 	
 
 	public EndpointInfo() {
-
 	}
 
 	public long getId() {
@@ -30,7 +35,7 @@ public class EndpointInfo {
 		this.id = id;
 	}
 
-	public EndpointInfo(String endpoint, List<String> endpointParameters) {
+	public EndpointInfo(String endpoint, String endpointParameters) {
 		this.endpoint = endpoint;
 		this.endpointParameters = endpointParameters;
 	}
@@ -52,14 +57,14 @@ public class EndpointInfo {
 	/**
 	 * @return the endpointParameters
 	 */
-	public List<String> getEndpointParameters() {
+	public String getEndpointParameters() {
 		return endpointParameters;
 	}
 
 	/**
 	 * @param endpointParameters the endpointParameters to set
 	 */
-	public void setEndpointParameters(List<String> endpointParameters) {
+	public void setEndpointParameters(String endpointParameters) {
 		this.endpointParameters = endpointParameters;
 	}
 
