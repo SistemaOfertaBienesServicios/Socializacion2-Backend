@@ -101,5 +101,6 @@ public class SocializacionController extends BaseController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+   
 
 }
