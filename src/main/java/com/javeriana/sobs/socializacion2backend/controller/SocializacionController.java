@@ -101,5 +101,14 @@ public class SocializacionController extends BaseController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
+    
+    @RequestMapping(value = "/quotations/{providerId}", method = RequestMethod.GET)
+    public ResponseEntity<List<Quotation>> getQuotations(@PathVariable ("providerId") long providerId) throws SocializacionException {
+        try {
+            List<Quotation> quotations = socializacionServiceImpl.getQuotations(providerId);
+            return new ResponseEntity<>(quotations, HttpStatus.OK);
+        } catch (Exception ex) {
+            throw handleException(ex);
+        }
+    }
 }

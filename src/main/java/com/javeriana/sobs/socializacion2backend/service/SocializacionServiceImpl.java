@@ -83,4 +83,9 @@ public class SocializacionServiceImpl implements SocializacionService {
         return persistenceDAOImpl.saveQuotation(quotation);
     }
 
+    @Override
+    public List<Quotation> getQuotations(long providerId) throws SQLException {
+        return persistenceDAOImpl.getQuotations(providerId);
+    }
+
 }

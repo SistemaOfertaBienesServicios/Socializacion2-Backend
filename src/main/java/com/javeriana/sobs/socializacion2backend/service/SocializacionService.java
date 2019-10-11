@@ -22,4 +22,5 @@ public interface SocializacionService {
     public RoleWrapper validateLoginUser(String username, String password) throws SQLException, SocializacionException;
     public StatusInfo updateOrCreateProviderProducts(String username, List<Product> products) throws SocializacionException, SQLException;
     public Quotation saveQuotation(Quotation quotation) throws SQLException;
+    public List<Quotation> getQuotations(long providerId) throws SQLException;
 }

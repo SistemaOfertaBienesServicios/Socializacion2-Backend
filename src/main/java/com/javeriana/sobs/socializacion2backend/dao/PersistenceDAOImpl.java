@@ -68,6 +68,59 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         return newProvider;
     }
+    
+    
+    
+    @Override
+    public List<Quotation> getQuotations(long providerId) throws SQLException {
+        List<Quotation> quotations = new ArrayList<>();
+        String consulta = "SELECT * FROM sobs.quotation Where providerId = ? ";
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement statement= connection.prepareStatement(consulta);
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            List<Product> products = getQuotationProducts(resultSet.getLong("id"));
+            Quotation quotation = new Quotation(resultSet.getLong("id"), resultSet.getLong("total"), products, resultSet.getString("username"),resultSet.getLong("providerId"));
+            quotations.add(quotation);
+        }
+        connection.close();
+        return quotations;
+    }
+    
+    public List<Product> getQuotationProducts(long quotationId) throws SQLException {
+        List<Product> products = new ArrayList<>();
+        String consulta = "SELECT product_id,quantity FROM sobs.product_quotation Where quotation_id = ? ";
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement statement= connection.prepareStatement(consulta);
+        statement.setLong(1, quotationId);
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            long product_id = resultSet.getLong("product_id");
+            long quantity = resultSet.getLong("quantity");
+            Product product = getProductbyId(product_id,quantity);
+            products.add(product);
+        }
+        connection.close();
+        return products;
+    }
+    
+    
+    public Product getProductbyId(long product_id, long quantity) throws SQLException {
+        Product product= new Product();
+        String consulta = "SELECT * FROM sobs.product Where product_id = ? ";
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement statement= connection.prepareStatement(consulta);
+        statement.setLong(1, product_id);
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            product.setId(resultSet.getLong("id"));
+            product.setName(resultSet.getString("name"));
+            product.setPrice(resultSet.getLong("price"));
+            product.setQuantity(quantity);
+        }
+        connection.close();
+        return product;
+    }
 
     @Override
     public boolean validateToken(String token) throws SQLException {
@@ -99,6 +152,9 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         }
         return endpoint;
     }
+    
+    
+    
 
     public long generateId() {
         final UUID uid = UUID.randomUUID();
@@ -195,6 +251,37 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         stmtep.setString(4, newQuotation.getUsername());
         stmtep.executeUpdate();
         connection.close();
+        List<Product> prods = newQuotation.getProducts();
+        for(Product product: prods){
+            saveProductQuotation((int) product.getQuantity() , newQuotation.getId(), product.getId());
+            saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());        
+        }       
         return newQuotation;
     }
+
+    public void saveProductQuotation(int quantity, long quotation_id, long product_id) throws SQLException {
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.product_quotation (quantity, quotation_id, product_id) values (?, ?, ?)");
+        long quotationId = generateId();
+        stmtep.setInt(1, quantity);
+        stmtep.setLong(2, quotation_id);
+        stmtep.setLong(3, product_id);
+        stmtep.executeUpdate();
+        connection.close();
+    }
+    
+    public void saveProduct(long id, String name, long price, long quantity, long provider_id) throws SQLException {
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.product (id, name, price,quantity,provider_id) values (?, ?, ?, ?,?)");
+        long quotationId = generateId();
+        stmtep.setLong(1, id);
+        stmtep.setString(2, name);
+        stmtep.setLong(3, price);
+        stmtep.setLong(4, quantity);
+        stmtep.setLong(5, provider_id);
+        stmtep.executeUpdate();
+        connection.close();
+    }
+    
+    
 }

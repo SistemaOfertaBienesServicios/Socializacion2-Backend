@@ -10,24 +10,33 @@ package com.javeriana.sobs.socializacion2backend.model;
  * @author cristianmendi
  */
 public class Product {
-	
+
     private long id;
     private String name;
     private long price;
     private long quantity;
-    
-    public Product(){
+
+    public Product() {
     }
 
-	public long getId() {
-		return id;
-	}
+    public Product(long id, String name, long price, long quantity) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    
+    
+    public long getId() {
+        return id;
+    }
 
-	public String getName() {
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
         return name;
     }
 
@@ -56,5 +65,4 @@ public class Product {
         return "Product{" + "name=" + name + ", price=" + price + ", quantity=" + quantity + '}';
     }
 
-  
 }
