@@ -150,15 +150,18 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    //EXTERNAL METHOD
     @CrossOrigin
     @RequestMapping(path = "/pruebaEndp", method = RequestMethod.POST)
     public ResponseEntity<?> pruebaEndp(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp");
+        
         List<ProductEndpWrapper> products = web.getProducts();
         QuotationResultWrapper qrw=  new QuotationResultWrapper(199999);
         return new ResponseEntity<>(qrw, HttpStatus.CREATED);
     }
     
+    //EXTERNAL METHOD
     @CrossOrigin
     @RequestMapping(path = "/pruebaEndp2", method = RequestMethod.POST)
     public ResponseEntity<?> pruebaEndp2(@RequestBody WrapperExternalEndp web)  {

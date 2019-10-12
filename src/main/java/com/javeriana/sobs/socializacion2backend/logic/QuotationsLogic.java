@@ -133,6 +133,11 @@ public class QuotationsLogic {
                     if(prod.getName().equals(products.get(i).getName())){
                         products.get(i).setPrice(prod.getPrice());
                         total+=products.get(i).getPrice()*products.get(i).getQuantity();
+                        System.out.println("price");
+                        System.out.println(products.get(i).getPrice());
+                        System.out.println("total");
+                        System.out.println(total);
+                        
                     }
                 }
                 System.out.println("products.get(i)");
