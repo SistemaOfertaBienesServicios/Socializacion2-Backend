@@ -399,15 +399,6 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         return product;
     }
 
-    @Override
-    public List<Product> getProductsInfo(List<Product> products, long provider_Id) throws SQLException {
-        List<Product> productsInfo = new ArrayList<>();
-        for (Product product: products){
-            Product tempProd= getProductByProvAndname(provider_Id,product.getName());
-            productsInfo.add(tempProd);
-        }
-        return productsInfo;
-    }
     
 
     

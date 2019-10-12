@@ -20,7 +20,7 @@ public interface SocializacionService {
     public Provider registerProvider(Provider newProvider) throws SQLException;
     public boolean validateToken(String token) throws SQLException;
     public List<Quotation> makeQuotes(List<Product> products,String username, String email) throws SQLException;
-    public User validateLoginUser(String username, String password) throws SQLException, SocializacionException;
+    public RoleWrapper validateLoginUser(String username, String password) throws SQLException, SocializacionException;
     public StatusInfo updateOrCreateProviderProducts(long providerId, List<Product> products) throws SocializacionException, SQLException;
     public Quotation saveQuotation(Quotation quotation,String email, String nameProvider,boolean external) throws SQLException;
     public List<Quotation> getQuotations(long providerId) throws SQLException;

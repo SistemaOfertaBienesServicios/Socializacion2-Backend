@@ -58,7 +58,7 @@ public class SocializacionController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<ResponseWrapper> loginUser(@RequestBody LoginData loginData) throws SocializacionException {
         try {
-            User roleWrapperResponse = socializacionServiceImpl.validateLoginUser(loginData.getUsername(), loginData.getPassword());
+            RoleWrapper roleWrapperResponse = socializacionServiceImpl.validateLoginUser(loginData.getUsername(), loginData.getPassword());
             if (roleWrapperResponse == null) {
                 return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
             }
