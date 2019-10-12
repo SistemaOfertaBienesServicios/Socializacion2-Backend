@@ -287,6 +287,8 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         List<Product> prods = newQuotation.getProducts();
         for (Product product : prods) {
+        System.out.println("productproduct");
+        System.out.println(product);
             long prodId=generateId();
             product.setId(prodId);
             saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());

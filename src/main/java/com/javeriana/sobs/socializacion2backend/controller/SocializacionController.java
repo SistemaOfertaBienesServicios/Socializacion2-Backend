@@ -20,6 +20,7 @@ import com.javeriana.sobs.socializacion2backend.model.Product;
 import com.javeriana.sobs.socializacion2backend.model.Provider;
 import com.javeriana.sobs.socializacion2backend.model.Quotation;
 import com.javeriana.sobs.socializacion2backend.model.Role;
+import com.javeriana.sobs.socializacion2backend.model.User;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.LoginData;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.NewProviderWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.ProductWrapper;
@@ -109,7 +110,8 @@ public class SocializacionController extends BaseController {
     @RequestMapping(path = "/quote", method = RequestMethod.POST)
     public ResponseEntity<?> makeQuotes(@RequestBody QuotationWrapper quotationData)  {
         try {
-            List<Quotation> quotations = socializacionServiceImpl.makeQuotes(quotationData.getProducts(),quotationData.getUsername(),quotationData.getEmail());
+            User u = socializacionServiceImpl.getUser(quotationData.getUsername());
+            List<Quotation> quotations = socializacionServiceImpl.makeQuotes(quotationData.getProducts(),quotationData.getUsername(),u.getEmail());
             return new ResponseEntity<>(quotations,HttpStatus.CREATED);
         } catch (SQLException ex) {
             Logger.getLogger(SocializacionController.class.getName()).log(Level.SEVERE, null, ex);

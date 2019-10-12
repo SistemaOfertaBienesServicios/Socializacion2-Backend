@@ -119,15 +119,20 @@ public class QuotationsLogic {
             QuotationWrapper quot = new QuotationWrapper();
             quot.setProducts(productsInfo);
             long total=0;
-            for(Product product : productsInfo){
-                total+=product.getPrice()*product.getQuantity();
+            for(int i=0; i<productsInfo.size();i++){
+                productsInfo.get(i).setQuantity(products.get(i).getQuantity());
+                total+=productsInfo.get(i).getPrice()*productsInfo.get(i).getQuantity();
             }
             quot.setTotal(total);
             quot.setProviderId(prov.getId());
             quot.setUsername(username);
             quot.setEmail(email);
             quot.setProviderName(prov.getName());
+            quot.setProducts(productsInfo);
+            System.out.println("quot");
+            System.out.println(quot);
             quotations.add(quot);
+            
         }
         
         return quotations;
