@@ -93,7 +93,7 @@ public class SocializacionServiceImpl implements SocializacionService {
     public Quotation saveQuotation(Quotation quotation, String email, String nameProvider) throws SQLException {
         System.out.println("quotation");
         System.out.println(quotation.toString());
-        SocializacionMail.sendEmail(email, quotation, nameProvider);
+        SocializacionMail.sendEmail(email, quotation, nameProvider, true);
         return persistenceDAOImpl.saveQuotation(quotation);
     }
 
