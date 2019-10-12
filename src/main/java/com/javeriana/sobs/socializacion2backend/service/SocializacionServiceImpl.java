@@ -51,9 +51,9 @@ public class SocializacionServiceImpl implements SocializacionService {
 	}
 
 	@Override
-	public StatusInfo updateOrCreateProviderProducts(String username, List<Product> products) throws SocializacionException, SQLException{
-		if (!username.isEmpty() && !products.isEmpty()) {
-			boolean response = persistenceDAOImpl.updateOrCreateProviderProducts(username, products);
+	public StatusInfo updateOrCreateProviderProducts(long providerId, List<Product> products) throws SocializacionException, SQLException{
+		if (!products.isEmpty()) {
+			boolean response = persistenceDAOImpl.updateOrCreateProviderProducts(providerId, products);
 			if (!response) {
 				throw new SocializacionException("Bad request processing!!", SocializacionErrorCode.BAD_REQUEST);
 			}

@@ -236,41 +236,40 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         }
         connection.close();
         return id;
-    }
+	}
 
-    @Override
-    public boolean updateOrCreateProviderProducts(String provider, List<Product> products) throws SQLException {
-        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        Long idProvider = consultIdFromProvider(provider);
-        for (Product product : products) {
-            PreparedStatement statementConsult = connection.prepareStatement("SELECT * FROM sobs.Product WHERE name=? AND Provider_id=?");
-            statementConsult.setString(1, product.getName());
-            statementConsult.setLong(2, idProvider);
-            ResultSet resultSet = statementConsult.executeQuery();
-
-            boolean validateExistingProduct = false;
-            while (resultSet.next()) {
-                validateExistingProduct = true;
-                PreparedStatement statementUpdate = connection.prepareStatement("UPDATE sobs.Product SET price=?, quantity=? WHERE name=? AND Provider_id=?");
-                statementUpdate.setLong(1, product.getPrice());
-                statementUpdate.setLong(2, product.getQuantity());
-                statementUpdate.setString(3, product.getName());
-                statementUpdate.setLong(4, idProvider);
-                statementUpdate.execute();
-            }
-
-            if (!validateExistingProduct) {
-                PreparedStatement statementUpdate = connection.prepareStatement("INSERT INTO sobs.Product (id, name, price, quantity, Provider_id) VALUES (?, ?, ?, ?, ?)");
-                statementUpdate.setLong(1, generatelongUUIDIdentifier());
-                statementUpdate.setString(2, product.getName());
-                statementUpdate.setLong(3, product.getPrice());
-                statementUpdate.setLong(4, product.getQuantity());
-                statementUpdate.setLong(5, idProvider);
-                statementUpdate.execute();
-            }
-        }
-        connection.close();
-        return true;
+	@Override
+	public boolean updateOrCreateProviderProducts(long providerId, List<Product> products)  throws SQLException {
+		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+		for(Product product : products) {
+			PreparedStatement statementConsult = connection.prepareStatement("SELECT * FROM sobs.Product WHERE name=? AND Provider_id=?");
+			statementConsult.setString(1, product.getName());
+			statementConsult.setLong(2, providerId);
+	        ResultSet resultSet = statementConsult.executeQuery();
+	        
+	        boolean validateExistingProduct = false;
+	        while (resultSet.next()) {
+	        	validateExistingProduct = true;
+	        	PreparedStatement statementUpdate = connection.prepareStatement("UPDATE sobs.Product SET price=?, quantity=? WHERE name=? AND Provider_id=?");
+	        	statementUpdate.setLong(1, product.getPrice());
+	        	statementUpdate.setLong(2, product.getQuantity());
+	        	statementUpdate.setString(3, product.getName());
+	        	statementUpdate.setLong(4, providerId);
+	        	statementUpdate.execute();
+	        }
+	       
+	        if(!validateExistingProduct) {
+	        	PreparedStatement statementUpdate = connection.prepareStatement("INSERT INTO sobs.Product (id, name, price, quantity, Provider_id) VALUES (?, ?, ?, ?, ?)");
+	        	statementUpdate.setLong(1, generatelongUUIDIdentifier());
+	        	statementUpdate.setString(2, product.getName());
+	        	statementUpdate.setLong(3, product.getPrice());
+	        	statementUpdate.setLong(4, product.getQuantity());
+	        	statementUpdate.setLong(5, providerId);
+	        	statementUpdate.execute();
+	        }
+		}
+		connection.close();
+		return true;
 
     }
 

@@ -15,7 +15,7 @@ public interface PersistenceDAO {
     public boolean validateToken(String token) throws SQLException;
     public List<Provider> getProviders() throws SQLException;
     public User validateLoginUser(String username, String password) throws SQLException;
-    public boolean updateOrCreateProviderProducts(String provider, List<Product> products)  throws SQLException;
+    public boolean updateOrCreateProviderProducts(long providerId, List<Product> products)  throws SQLException;
     public Quotation saveQuotation(Quotation newQuotation) throws SQLException;
     public List<Quotation> getQuotations(long providerId) throws SQLException;
     public List<Product> getProducts() throws SQLException;
