@@ -8,7 +8,8 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -154,10 +155,7 @@ public class SocializacionController extends BaseController {
     public ResponseEntity<?> pruebaEndp(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp");
         List<ProductEndpWrapper> products = web.getProducts();
-        for(ProductEndpWrapper pw : products){
-            System.out.println(pw.toString());
-        }
-        QuotationResultWrapper qrw=  new QuotationResultWrapper(19999);
+        QuotationResultWrapper qrw=  new QuotationResultWrapper(199999);
         return new ResponseEntity<>(qrw, HttpStatus.CREATED);
     }
     
@@ -166,10 +164,7 @@ public class SocializacionController extends BaseController {
     public ResponseEntity<?> pruebaEndp2(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp2");
         List<ProductEndpWrapper> products = web.getProducts();
-        for(ProductEndpWrapper pw : products){
-            System.out.println(pw.toString());
-        }
-        QuotationResultWrapper qrw=  new QuotationResultWrapper(40000);
+        QuotationResultWrapper qrw=  new QuotationResultWrapper(400000);
         return new ResponseEntity<>(qrw, HttpStatus.CREATED);
     }
     

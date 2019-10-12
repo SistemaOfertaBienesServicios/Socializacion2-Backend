@@ -33,8 +33,18 @@ public class SocializacionMail {
 		format += "</table><p>El costo total de la cotización es de: $<span><strong>"+quotation.getTotal()+"</strong></span>.</p>   </body> </html> ";
 		return format;
 	}
+	
+	private static String generateHTMLbodyWithourPrice(Quotation quotation, String nameProvider) {
+		String format = "<!DOCTYPE html> <html> <head> <style> table {   font-family: arial, sans-serif;   border-collapse: collapse;   width: 100%; }  td, th {   border: 1px solid #dddddd;   text-align: left;   padding: 8px; }  tr:nth-child(even) {   background-color: #dddddd; } </style> </head> <body>   <h1 style=\"color: #1D83AD;\">Cotización del proveedor " + nameProvider;
+		format += "</h1> <p>Con base a la selección de los productos realizada por el cliente, se informará el detalle de la cotización realizada.</p>   <table>   <tr>     <th>Nombre</th>     <th>Cantidad</th>   </tr> ";
+		for(Product product : quotation.getProducts()) {
+			format += "<tr><td>"+product.getName()+"</td><td>"+product.getQuantity()+"</td></tr>";
+		}
+		format += "</table><p>El costo total de la cotización es de: $<span><strong>"+quotation.getTotal()+"</strong></span>.</p>   </body> </html> ";
+		return format;
+	}
 
-	public static void sendEmail(String recipientEmail, Quotation quotation, String nameProvider) {
+	public static void sendEmail(String recipientEmail, Quotation quotation, String nameProvider, boolean htmlPrice) {
                 String subjectEmail = "Corización proveedor: "+nameProvider;
 		Properties props = new Properties();
 		props.put("mail.smtp.starttls.enable", "true");
@@ -49,7 +59,13 @@ public class SocializacionMail {
 			}
 		});
 		
-		String bodyEmail = generateHTMLbody(quotation, nameProvider);
+		String bodyEmail = "";
+		if(htmlPrice) {
+			bodyEmail = generateHTMLbody(quotation, nameProvider);
+		} else {
+			bodyEmail = generateHTMLbodyWithourPrice(quotation, nameProvider);
+		}
+		
 		System.out.println(bodyEmail);
 		try {
 			Message message = new MimeMessage(session);

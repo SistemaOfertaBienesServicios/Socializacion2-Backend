@@ -30,39 +30,38 @@ public class SocializacionServiceImpl implements SocializacionService {
     @Autowired
     private QuotationsLogic quotlogic;
 
+    @Override
+    public List<Role> getRoles() throws SQLException {
+        return persistenceDAOImpl.getRoles();
+    }
 
-	@Override
-	public List<Role> getRoles() throws SQLException {
-		return persistenceDAOImpl.getRoles();
-	}
+    @Override
+    public RoleWrapper validateLoginUser(String username, String password) throws SQLException, SocializacionException {
+        if (!username.isEmpty() && !password.isEmpty()) {
+            User validateUser = persistenceDAOImpl.validateLoginUser(username, password);
+            if (validateUser != null) {
+                return new RoleWrapper(validateUser.getRole());
+            }
+            return null;
+        } else {
+            throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
+        }
 
-	@Override
-	public User validateLoginUser(String username, String password) throws SQLException, SocializacionException {
-		if (!username.isEmpty() && !password.isEmpty()) {
-			User validateUser = persistenceDAOImpl.validateLoginUser(username, password);
-			if (validateUser != null) {
-				return validateUser;
-			}
-			return null;
-		} else {
-			throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
-		}
+    }
 
-	}
-
-	@Override
-	public StatusInfo updateOrCreateProviderProducts(long providerId, List<Product> products) throws SocializacionException, SQLException{
-		if (!products.isEmpty()) {
-			boolean response = persistenceDAOImpl.updateOrCreateProviderProducts(providerId, products);
-			if (!response) {
-				throw new SocializacionException("Bad request processing!!", SocializacionErrorCode.BAD_REQUEST);
-			}
-			StatusInfo status = new StatusInfo("Validate Request");
-			return status;
-		} else {
-			throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
-		}
-	}
+    @Override
+    public StatusInfo updateOrCreateProviderProducts(long providerId, List<Product> products) throws SocializacionException, SQLException {
+        if (!products.isEmpty()) {
+            boolean response = persistenceDAOImpl.updateOrCreateProviderProducts(providerId, products);
+            if (!response) {
+                throw new SocializacionException("Bad request processing!!", SocializacionErrorCode.BAD_REQUEST);
+            }
+            StatusInfo status = new StatusInfo("Validate Request");
+            return status;
+        } else {
+            throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
+        }
+    }
 	
     @Override
     public Provider registerProvider(Provider newProvider) throws SQLException {
@@ -77,13 +76,15 @@ public class SocializacionServiceImpl implements SocializacionService {
     @Override
     public List<Quotation> makeQuotes(List<Product> products, String username, String email) throws SQLException {
         List<Quotation> allQuotes = new ArrayList<>();
-        List<List<Provider>> provs = quotlogic.getProvidersClassified();
+        List<List<Provider>> provs = quotlogic.getProvidersClassified(products);
         List<QuotationWrapper> localQuotes = quotlogic.createQuotations(provs.get(1), products, username, email);
-        User user =getUser(username);
+        User user = getUser(username);
         quotlogic.sendExternalQuots(provs.get(0), products, user.getUsername(), user.getEmail());
-        for(QuotationWrapper quote : localQuotes){
-            Quotation qu = new Quotation(quote.getTotal(),quote.getProducts(),quote.getUsername(),quote.getProviderId());
-            saveQuotation(qu,user.getEmail(),quote.getProviderName());
+        for (QuotationWrapper quote : localQuotes) {
+            Quotation qu = new Quotation(quote.getTotal(), quote.getProducts(), quote.getUsername(), quote.getProviderId());
+            saveQuotation(qu, user.getEmail(), quote.getProviderName());
+            System.out.println("pppp");
+            System.out.println(qu);
             allQuotes.add(qu);
         }
         return allQuotes;
@@ -93,7 +94,7 @@ public class SocializacionServiceImpl implements SocializacionService {
     public Quotation saveQuotation(Quotation quotation, String email, String nameProvider) throws SQLException {
         System.out.println("quotation");
         System.out.println(quotation.toString());
-        SocializacionMail.sendEmail(email, quotation, nameProvider);
+        SocializacionMail.sendEmail(email, quotation, nameProvider, true);
         return persistenceDAOImpl.saveQuotation(quotation);
     }
 
@@ -111,12 +112,5 @@ public class SocializacionServiceImpl implements SocializacionService {
     public User getUser(String usename) throws SQLException {
         return persistenceDAOImpl.getUser(usename);
     }
-
-    @Override
-    public List<Product> getProductsInfo(List<Product> products,long provider_id) throws SQLException {
-        return persistenceDAOImpl.getProductsInfo(products,provider_id);
-    }
-    
-    
 
 }

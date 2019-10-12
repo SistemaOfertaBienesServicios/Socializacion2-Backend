@@ -54,7 +54,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     @Override
     public Provider registerProvider(Provider newProvider) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        long providerId = generateId();
+        long providerId = generatelongUUIDIdentifier();
 
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO sobs.Provider (id, name, system) values (?, ?, ?)");
         stmt.setLong(1, providerId);
@@ -182,16 +182,6 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         return endpoint;
     }
-
-    public long generateId() {
-        final UUID uid = UUID.randomUUID();
-        final ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
-        buffer.putLong(uid.getLeastSignificantBits());
-        buffer.putLong(uid.getMostSignificantBits());
-        final BigInteger bi = new BigInteger(buffer.array());
-        long identifier = bi.longValue();
-        return identifier;
-    }
     
     public Provider getProviderByName(String name) {
     	Provider provider = null;
@@ -301,7 +291,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public Quotation saveQuotation(Quotation newQuotation) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.Quotation (id, total, Provider_id,User_username) values (?, ?, ?, ?)");
-        long quotationId = generateId();
+        long quotationId = generatelongUUIDIdentifier();
         stmtep.setLong(1, quotationId);
         stmtep.setLong(2, newQuotation.getTotal());
         stmtep.setLong(3, newQuotation.getProviderId());
@@ -310,7 +300,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         List<Product> prods = newQuotation.getProducts();
         for (Product product : prods) {
-            long prodId=generateId();
+            long prodId=generatelongUUIDIdentifier();
             product.setId(prodId);
             saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());
             saveProductQuotation((int) product.getQuantity(), quotationId, product.getId());
@@ -322,7 +312,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public void saveProductQuotation(int quantity, long quotation_id, long product_id) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.product_quotation (quantity, quotation_id, product_id) values (?, ?, ?)");
-        long quotationId = generateId();
+        long quotationId = generatelongUUIDIdentifier();
         stmtep.setInt(1, quantity);
         stmtep.setLong(2, quotation_id);
         stmtep.setLong(3, product_id);
@@ -333,7 +323,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public void saveProduct(long id, String name, long price, long quantity, long provider_id) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.product (id, name, price,quantity,provider_id) values (?, ?, ?, ?,?)");
-        long quotationId = generateId();
+        long quotationId = generatelongUUIDIdentifier();
         stmtep.setLong(1, id);
         stmtep.setString(2, name);
         stmtep.setLong(3, price);
@@ -418,6 +408,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         }
         return productsInfo;
     }
+    
 
     
 
