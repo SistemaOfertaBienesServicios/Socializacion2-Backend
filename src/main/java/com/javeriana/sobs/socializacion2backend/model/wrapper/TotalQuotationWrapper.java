@@ -9,16 +9,16 @@ package com.javeriana.sobs.socializacion2backend.model.wrapper;
  *
  * @author cristianmendi
  */
-public class QuotationResultWrapper {
+public class TotalQuotationWrapper {
     private long total;
-    
-    public QuotationResultWrapper() {
-    }
 
-    public QuotationResultWrapper(long total) {
+    public TotalQuotationWrapper(long total) {
         this.total = total;
     }
-    
+
+    public TotalQuotationWrapper() {
+    }
+
     public long getTotal() {
         return total;
     }
@@ -27,14 +27,9 @@ public class QuotationResultWrapper {
         this.total = total;
     }
 
-    
-    
     @Override
     public String toString() {
-        return "QuotationResultWrapper{" + "total=" + total + '}';
+        return "TotalQuotationWrapper{" + "total=" + total + '}';
     }
-
-    
-    
     
 }

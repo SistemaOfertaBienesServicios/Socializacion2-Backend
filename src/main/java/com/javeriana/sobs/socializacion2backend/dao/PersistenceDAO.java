@@ -20,4 +20,8 @@ public interface PersistenceDAO {
     public List<Quotation> getQuotations(long providerId) throws SQLException;
     public List<Product> getProducts() throws SQLException;
     public long consultIdFromProvider(String name) throws SQLException;
+    public User getUser(String usename) throws SQLException;
+    public List<Product> getProductsInfo(List<Product> products,long provider_Id) throws SQLException;
+
+
 }

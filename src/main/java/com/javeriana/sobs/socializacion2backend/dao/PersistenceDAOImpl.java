@@ -55,20 +55,20 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public Provider registerProvider(Provider newProvider) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         long providerId = generateId();
-        
+
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO sobs.Provider (id, name, system) values (?, ?, ?)");
         stmt.setLong(1, providerId);
         stmt.setString(2, newProvider.getName());
         stmt.setBoolean(3, newProvider.isSystem());
         stmt.executeUpdate();
         connection.close();
-        if (newProvider.isSystem()){
-            registerEndpoint(newProvider.getEndpoint(),providerId);
+        if (newProvider.isSystem()) {
+            registerEndpoint(newProvider.getEndpoint(), providerId);
         }
         return newProvider;
     }
-    
-    public void registerEndpoint(EndpointInfo endpoint, long providerId) throws SQLException{
+
+    public void registerEndpoint(EndpointInfo endpoint, long providerId) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.EndPointInfo (id, endpoint, endpointParameters,provider_id) values (?, ?, ?, ?)");
         stmtep.setLong(1, providerId);
@@ -78,13 +78,12 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         stmtep.executeUpdate();
         connection.close();
     }
-    
 
-    public List<Product> getProductsByProvider(long provider_id) throws SQLException{
+    public List<Product> getProductsByProvider(long provider_id) throws SQLException {
         List<Product> products = new ArrayList<>();
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         String consulta = "SELECT * FROM sobs.product Where provider_id = ? ";
-        PreparedStatement statement= connection.prepareStatement(consulta);
+        PreparedStatement statement = connection.prepareStatement(consulta);
         statement.setLong(1, provider_id);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
@@ -94,48 +93,46 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         return products;
     }
-    
 
     @Override
     public List<Quotation> getQuotations(long providerId) throws SQLException {
         List<Quotation> quotations = new ArrayList<>();
         String consulta = "SELECT * FROM sobs.quotation Where providerId = ? ";
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        PreparedStatement statement= connection.prepareStatement(consulta);
+        PreparedStatement statement = connection.prepareStatement(consulta);
         statement.setLong(1, providerId);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             List<Product> products = getQuotationProducts(resultSet.getLong("id"));
-            Quotation quotation = new Quotation(resultSet.getLong("id"), resultSet.getLong("total"), products, resultSet.getString("username"),resultSet.getLong("providerId"));
+            Quotation quotation = new Quotation(resultSet.getLong("id"), resultSet.getLong("total"), products, resultSet.getString("username"), resultSet.getLong("providerId"));
             quotations.add(quotation);
         }
         connection.close();
         return quotations;
     }
-    
+
     public List<Product> getQuotationProducts(long quotationId) throws SQLException {
         List<Product> products = new ArrayList<>();
         String consulta = "SELECT product_id,quantity FROM sobs.product_quotation Where quotation_id = ? ";
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        PreparedStatement statement= connection.prepareStatement(consulta);
+        PreparedStatement statement = connection.prepareStatement(consulta);
         statement.setLong(1, quotationId);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             long product_id = resultSet.getLong("product_id");
             long quantity = resultSet.getLong("quantity");
-            Product product = getProductbyId(product_id,quantity);
+            Product product = getProductbyId(product_id, quantity);
             products.add(product);
         }
         connection.close();
         return products;
     }
-    
-    
+
     public Product getProductbyId(long product_id, long quantity) throws SQLException {
-        Product product= new Product();
+        Product product = new Product();
         String consulta = "SELECT * FROM sobs.product Where product_id = ? ";
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        PreparedStatement statement= connection.prepareStatement(consulta);
+        PreparedStatement statement = connection.prepareStatement(consulta);
         statement.setLong(1, product_id);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
@@ -172,20 +169,19 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public EndpointInfo getEndpoint(long provider_id) throws SQLException {
         EndpointInfo endpoint = new EndpointInfo();
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        
-        
+
         String consulta = "SELECT * FROM sobs.EndPointInfo where provider_id=?";
-        PreparedStatement statement= connection.prepareStatement(consulta);
+        PreparedStatement statement = connection.prepareStatement(consulta);
         statement.setLong(1, provider_id);
         ResultSet resultSet = statement.executeQuery();
-        
+
         while (resultSet.next()) {
             endpoint = new EndpointInfo(resultSet.getLong("id"), resultSet.getString("endpoint"), resultSet.getString("endpointParameters"));
         }
         connection.close();
         return endpoint;
     }
-    
+
     public long generateId() {
         final UUID uid = UUID.randomUUID();
         final ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
@@ -210,65 +206,65 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         }
         connection.close();
         return user;
-        
-	}
-	
-	private long generatelongUUIDIdentifier() {
-		final UUID uid = UUID.randomUUID();
+
+    }
+
+    private long generatelongUUIDIdentifier() {
+        final UUID uid = UUID.randomUUID();
         final ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
         buffer.putLong(uid.getLeastSignificantBits());
         buffer.putLong(uid.getMostSignificantBits());
         final BigInteger bi = new BigInteger(buffer.array());
         return bi.longValue();
-	}
-	
-	@Override
-	public long consultIdFromProvider(String name) throws SQLException {
-		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+    }
+
+    @Override
+    public long consultIdFromProvider(String name) throws SQLException {
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement = connection.prepareStatement("SELECT id FROM sobs.Provider WHERE name=?");
         statement.setString(1, name);
         ResultSet resultSet = statement.executeQuery();
         Long id = 0L;
         while (resultSet.next()) {
-        	id = Long.parseLong(resultSet.getString("id"));
+            id = Long.parseLong(resultSet.getString("id"));
         }
         connection.close();
         return id;
-	}
+    }
 
-	@Override
-	public boolean updateOrCreateProviderProducts(String provider, List<Product> products)  throws SQLException {
-		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-		Long idProvider = consultIdFromProvider(provider);
-		for(Product product : products) {
-			PreparedStatement statementConsult = connection.prepareStatement("SELECT * FROM sobs.Product WHERE name=? AND Provider_id=?");
-			statementConsult.setString(1, product.getName());
-			statementConsult.setLong(2, idProvider);
-	        ResultSet resultSet = statementConsult.executeQuery();
-	        
-	        boolean validateExistingProduct = false;
-	        while (resultSet.next()) {
-	        	validateExistingProduct = true;
-	        	PreparedStatement statementUpdate = connection.prepareStatement("UPDATE sobs.Product SET price=?, quantity=? WHERE name=? AND Provider_id=?");
-	        	statementUpdate.setLong(1, product.getPrice());
-	        	statementUpdate.setLong(2, product.getQuantity());
-	        	statementUpdate.setString(3, product.getName());
-	        	statementUpdate.setLong(4, idProvider);
-	        	statementUpdate.execute();
-	        }
-	       
-	        if(!validateExistingProduct) {
-	        	PreparedStatement statementUpdate = connection.prepareStatement("INSERT INTO sobs.Product (id, name, price, quantity, Provider_id) VALUES (?, ?, ?, ?, ?)");
-	        	statementUpdate.setLong(1, generatelongUUIDIdentifier());
-	        	statementUpdate.setString(2, product.getName());
-	        	statementUpdate.setLong(3, product.getPrice());
-	        	statementUpdate.setLong(4, product.getQuantity());
-	        	statementUpdate.setLong(5, idProvider);
-	        	statementUpdate.execute();
-	        }
-		}
-		connection.close();
-		return true;
+    @Override
+    public boolean updateOrCreateProviderProducts(String provider, List<Product> products) throws SQLException {
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        Long idProvider = consultIdFromProvider(provider);
+        for (Product product : products) {
+            PreparedStatement statementConsult = connection.prepareStatement("SELECT * FROM sobs.Product WHERE name=? AND Provider_id=?");
+            statementConsult.setString(1, product.getName());
+            statementConsult.setLong(2, idProvider);
+            ResultSet resultSet = statementConsult.executeQuery();
+
+            boolean validateExistingProduct = false;
+            while (resultSet.next()) {
+                validateExistingProduct = true;
+                PreparedStatement statementUpdate = connection.prepareStatement("UPDATE sobs.Product SET price=?, quantity=? WHERE name=? AND Provider_id=?");
+                statementUpdate.setLong(1, product.getPrice());
+                statementUpdate.setLong(2, product.getQuantity());
+                statementUpdate.setString(3, product.getName());
+                statementUpdate.setLong(4, idProvider);
+                statementUpdate.execute();
+            }
+
+            if (!validateExistingProduct) {
+                PreparedStatement statementUpdate = connection.prepareStatement("INSERT INTO sobs.Product (id, name, price, quantity, Provider_id) VALUES (?, ?, ?, ?, ?)");
+                statementUpdate.setLong(1, generatelongUUIDIdentifier());
+                statementUpdate.setString(2, product.getName());
+                statementUpdate.setLong(3, product.getPrice());
+                statementUpdate.setLong(4, product.getQuantity());
+                statementUpdate.setLong(5, idProvider);
+                statementUpdate.execute();
+            }
+        }
+        connection.close();
+        return true;
 
     }
 
@@ -284,10 +280,12 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         stmtep.executeUpdate();
         connection.close();
         List<Product> prods = newQuotation.getProducts();
-        for(Product product: prods){
-            saveProductQuotation((int) product.getQuantity() , newQuotation.getId(), product.getId());
-            saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());        
-        }     
+        for (Product product : prods) {
+            long prodId=generateId();
+            product.setId(prodId);
+            saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());
+            saveProductQuotation((int) product.getQuantity(), quotationId, product.getId());
+        }
         connection.close();
         return newQuotation;
     }
@@ -302,7 +300,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         stmtep.executeUpdate();
         connection.close();
     }
-    
+
     public void saveProduct(long id, String name, long price, long quantity, long provider_id) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.product (id, name, price,quantity,provider_id) values (?, ?, ?, ?,?)");
@@ -315,40 +313,85 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         stmtep.executeUpdate();
         connection.close();
     }
-    
+
     private boolean checkRepeatedName(String productName, List<String> products) {
-    	for (String product : products) {
-			if(product.indexOf(productName) != -1) {
-				return true;
-			}
-		}
-    	return false;
+        for (String product : products) {
+            if (product.indexOf(productName) != -1) {
+                return true;
+            }
+        }
+        return false;
     }
 
-	@Override
-	public List<Product> getProducts() throws SQLException {
-		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+    @Override
+    public List<Product> getProducts() throws SQLException {
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.Product");
         ResultSet resultSet = statement.executeQuery();
         List<Product> products = new ArrayList<>();
         List<String> productsName = new ArrayList<>();
         while (resultSet.next()) {
-        	String productName = resultSet.getString("name");
-        	if(!checkRepeatedName(productName, productsName)) {
-        		Product product = new Product();
-            	product.setId(Long.parseLong(resultSet.getString("id")));
-            	product.setName(resultSet.getString("name"));
-            	product.setPrice(Long.parseLong(resultSet.getString("price")));
-            	product.setQuantity(Long.parseLong(resultSet.getString("quantity")));
-            	products.add(product);
-            	productsName.add(productName);
-        	}
+            String productName = resultSet.getString("name");
+            if (!checkRepeatedName(productName, productsName)) {
+                Product product = new Product();
+                product.setId(Long.parseLong(resultSet.getString("id")));
+                product.setName(resultSet.getString("name"));
+                product.setPrice(Long.parseLong(resultSet.getString("price")));
+                product.setQuantity(Long.parseLong(resultSet.getString("quantity")));
+                products.add(product);
+                productsName.add(productName);
+            }
         }
+        connection.close();
         return products;
-	}
+    }
+
+    @Override
+    public User getUser(String usename) throws SQLException {
+        User user= new User();
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.User WHERE username=?");
+        statement.setString(1, usename);
+        ResultSet resultSet = statement.executeQuery();
+        Long id = 0L;
+        while (resultSet.next()) {
+        	user.setEmail(resultSet.getString("email"));
+                user.setUsername(resultSet.getString("username"));
+        }
+        connection.close();
+        return user;
+    }
     
-    
-    
-    
-    
+    public Product getProductByProvAndname(long providerId, String productName) throws SQLException {
+        Product product= new Product();
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.Product WHERE name=? and provider_id=?");
+        statement.setString(1, productName);
+        statement.setLong(2, providerId);
+        ResultSet resultSet = statement.executeQuery();
+        Long id = 0L;
+        while (resultSet.next()) {
+            product.setId(resultSet.getLong("id"));
+            product.setPrice(resultSet.getLong("price"));
+            product.setName(productName);
+            product.setQuantity(resultSet.getLong("quantity"));
+        }
+        connection.close();
+        System.out.println("prod. consulta");
+        System.out.println(product);
+        return product;
+    }
+
+    @Override
+    public List<Product> getProductsInfo(List<Product> products, long provider_Id) throws SQLException {
+        List<Product> productsInfo = new ArrayList<>();
+        for (Product product: products){
+            System.out.println("product");
+            System.out.println(product);
+            Product tempProd= getProductByProvAndname(provider_Id,product.getName());
+            productsInfo.add(tempProd);
+        }
+        return productsInfo;
+    }
+
 }

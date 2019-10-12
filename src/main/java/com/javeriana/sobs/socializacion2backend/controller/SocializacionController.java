@@ -23,12 +23,13 @@ import com.javeriana.sobs.socializacion2backend.model.wrapper.LoginData;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.NewProviderWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.ProductWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.QuotationResultWrapper;
-import com.javeriana.sobs.socializacion2backend.model.wrapper.QuotationsWrapper;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.QuotationWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.ResponseWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.RoleWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.StatusInfo;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.WrapperExternalBody;
 import com.javeriana.sobs.socializacion2backend.service.SocializacionService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Controller
 public class SocializacionController extends BaseController {
@@ -36,6 +37,7 @@ public class SocializacionController extends BaseController {
     @Autowired
     SocializacionService socializacionServiceImpl;
 
+    @CrossOrigin
     @RequestMapping(value = "/roles", method = RequestMethod.GET)
     public ResponseEntity<List<Role>> getRoles() throws SocializacionException {
         try {
@@ -45,6 +47,7 @@ public class SocializacionController extends BaseController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<ResponseWrapper> loginUser(@RequestBody LoginData loginData) throws SocializacionException {
         try {
@@ -58,6 +61,7 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    @CrossOrigin
     @RequestMapping(value = "/products/{providerId}", method = RequestMethod.PUT)
     public ResponseEntity<ResponseWrapper> createProducts(@PathVariable("providerId") String providerId, @RequestBody List<Product> products) throws SocializacionException {
         try {
@@ -68,6 +72,7 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    @CrossOrigin
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     public ResponseEntity<ResponseWrapper> getProducts() throws SocializacionException {
         try {
@@ -78,6 +83,7 @@ public class SocializacionController extends BaseController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(path = "/register/{token}", method = RequestMethod.POST)
     public ResponseEntity<?> registerProvider(@RequestBody NewProviderWrapper newProvider, @PathVariable("token") String token) {
         try {
@@ -98,10 +104,11 @@ public class SocializacionController extends BaseController {
         }
     }
 
+    @CrossOrigin
     @RequestMapping(path = "/quote", method = RequestMethod.POST)
-    public ResponseEntity<?> makeQuotes(@RequestBody QuotationsWrapper quotationData)  {
+    public ResponseEntity<?> makeQuotes(@RequestBody QuotationWrapper quotationData)  {
         try {
-            List<Quotation> quotations = socializacionServiceImpl.makeQuotes(quotationData.getProducts(),quotationData.getUsername());
+            List<Quotation> quotations = socializacionServiceImpl.makeQuotes(quotationData.getProducts(),quotationData.getUsername(),quotationData.getEmail());
             return new ResponseEntity<>(quotations,HttpStatus.CREATED);
         } catch (SQLException ex) {
             Logger.getLogger(SocializacionController.class.getName()).log(Level.SEVERE, null, ex);
@@ -109,18 +116,20 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    @CrossOrigin
     @RequestMapping(path = "/saveQuote", method = RequestMethod.POST)
-    public ResponseEntity<?> saveQuotes(@RequestBody Quotation quotation)  {
+    public ResponseEntity<?> saveQuotes(@RequestBody QuotationWrapper quotation)  {
+        Quotation newQuotation = new Quotation(quotation.getTotal(), quotation.getProducts(), quotation.getUsername(), quotation.getProviderId());
         try {
-            Quotation newQuotation = socializacionServiceImpl.saveQuotation(quotation);
-            return new ResponseEntity<>(newQuotation,HttpStatus.CREATED);
+            Quotation storedQuotation = socializacionServiceImpl.saveQuotation(newQuotation,quotation.getEmail(),quotation.getProviderName());
+            return new ResponseEntity<>(storedQuotation,HttpStatus.CREATED);
         } catch (SQLException ex) {
             Logger.getLogger(SocializacionController.class.getName()).log(Level.SEVERE, null, ex);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    
+    @CrossOrigin
     @RequestMapping(value = "/quotations/{providerId}", method = RequestMethod.GET)
     public ResponseEntity<List<Quotation>> getQuotations(@PathVariable ("providerId") long providerId) throws SocializacionException {
         try {
@@ -131,6 +140,7 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    @CrossOrigin
     @RequestMapping(path = "/pruebaEndp", method = RequestMethod.POST)
     public ResponseEntity<?> pruebaEndp(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp");
@@ -138,10 +148,11 @@ public class SocializacionController extends BaseController {
         for(ProductEndpWrapper pw : products){
             System.out.println(pw.toString());
         }
-        QuotationResultWrapper qrw=  new QuotationResultWrapper(190000);
-        return new ResponseEntity<>(qrw, HttpStatus.OK);
+        QuotationResultWrapper qrw=  new QuotationResultWrapper(19999);
+        return new ResponseEntity<>(qrw, HttpStatus.CREATED);
     }
     
+    @CrossOrigin
     @RequestMapping(path = "/pruebaEndp2", method = RequestMethod.POST)
     public ResponseEntity<?> pruebaEndp2(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp2");
@@ -150,7 +161,7 @@ public class SocializacionController extends BaseController {
             System.out.println(pw.toString());
         }
         QuotationResultWrapper qrw=  new QuotationResultWrapper(40000);
-        return new ResponseEntity<>(qrw, HttpStatus.OK);
+        return new ResponseEntity<>(qrw, HttpStatus.CREATED);
     }
 
 }
