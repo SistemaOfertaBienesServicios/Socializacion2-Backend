@@ -192,6 +192,27 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         long identifier = bi.longValue();
         return identifier;
     }
+    
+    public Provider getProviderByName(String name) {
+    	Provider provider = null;
+    	try {
+    		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.Provider WHERE name=?");
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+            	provider = new Provider();
+            	provider.setId(resultSet.getLong("id"));
+            	provider.setSystem(resultSet.getBoolean("system"));
+            	provider.setName(resultSet.getString("name"));
+            }
+            connection.close();
+            return provider;
+    	} catch (Exception e) {
+    		System.out.println(e.toString());
+    	}
+    	return provider;
+    }
 
     @Override
     public User validateLoginUser(String username, String password) throws SQLException {
@@ -203,11 +224,19 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         User user = null;
         while (resultSet.next()) {
             user = new User();
-            String roleVerify = resultSet.getString("role");
-            if(roleVerify.contains("Proveedor")) {
-            	roleVerify += "."+Long.toString(consultIdFromProvider(username));
+            user.setRole(resultSet.getString("role"));
+            user.setUsername(resultSet.getString("username"));
+            user.setPassword(resultSet.getString("password"));
+            user.setEmail(resultSet.getString("email"));
+            String role = resultSet.getString("role");
+            if (role.contains("Proveedor")) {
+            	PreparedStatement statement2 = connection.prepareStatement("SELECT * FROM sobs.Provider WHERE name=?");
+                statement2.setString(1, resultSet.getString("username"));
+                ResultSet resultSet2 = statement2.executeQuery();
+            	while (resultSet2.next()) {
+            		user.setId(resultSet2.getLong("id"));
+                }
             }
-            user.setRole(roleVerify);
         }
         connection.close();
         return user;
@@ -215,12 +244,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     }
 
     private long generatelongUUIDIdentifier() {
-        final UUID uid = UUID.randomUUID();
-        final ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
-        buffer.putLong(uid.getLeastSignificantBits());
-        buffer.putLong(uid.getMostSignificantBits());
-        final BigInteger bi = new BigInteger(buffer.array());
-        return bi.longValue();
+    	return (new java.util.Random().nextLong() % (999999L - -999999L)) + -999999L;
     }
     
     @Override
@@ -286,8 +310,6 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         List<Product> prods = newQuotation.getProducts();
         for (Product product : prods) {
-        System.out.println("productproduct");
-        System.out.println(product);
             long prodId=generateId();
             product.setId(prodId);
             saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());
@@ -384,8 +406,6 @@ public class PersistenceDAOImpl implements PersistenceDAO {
             product.setQuantity(resultSet.getLong("quantity"));
         }
         connection.close();
-        System.out.println("prod. consulta");
-        System.out.println(product);
         return product;
     }
 
@@ -393,8 +413,6 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public List<Product> getProductsInfo(List<Product> products, long provider_Id) throws SQLException {
         List<Product> productsInfo = new ArrayList<>();
         for (Product product: products){
-            System.out.println("product");
-            System.out.println(product);
             Product tempProd= getProductByProvAndname(provider_Id,product.getName());
             productsInfo.add(tempProd);
         }

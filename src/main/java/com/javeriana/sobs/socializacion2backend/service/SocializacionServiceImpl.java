@@ -37,11 +37,11 @@ public class SocializacionServiceImpl implements SocializacionService {
 	}
 
 	@Override
-	public RoleWrapper validateLoginUser(String username, String password) throws SQLException, SocializacionException {
+	public User validateLoginUser(String username, String password) throws SQLException, SocializacionException {
 		if (!username.isEmpty() && !password.isEmpty()) {
 			User validateUser = persistenceDAOImpl.validateLoginUser(username, password);
 			if (validateUser != null) {
-				return new RoleWrapper(validateUser.getRole());
+				return validateUser;
 			}
 			return null;
 		} else {
