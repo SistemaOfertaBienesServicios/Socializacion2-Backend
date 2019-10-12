@@ -1,4 +1,4 @@
-package com.javeriana.sobs.socializacion2backend.service;
+    package com.javeriana.sobs.socializacion2backend.service;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -17,6 +17,7 @@ import com.javeriana.sobs.socializacion2backend.model.Role;
 import com.javeriana.sobs.socializacion2backend.model.User;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.RoleWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.StatusInfo;
+import java.util.ArrayList;
 
 @Service
 public class SocializacionServiceImpl implements SocializacionService {
@@ -72,10 +73,13 @@ public class SocializacionServiceImpl implements SocializacionService {
 
     @Override
     public List<Quotation> makeQuotes(List<Product> products, String username) throws SQLException {
-        List<Provider> provsWithoutS = quotlogic.getProvidersWithoutSystem();
-        quotlogic.sendExternalQuots(products);
-        List<Quotation> quotations= quotlogic.createQuotations(provsWithoutS,products,username);
-        return quotations;
+        List<Quotation> allQuotes = new ArrayList<>();
+        List<List<Provider>> provs = quotlogic.getProvidersClassified();
+        List<Quotation> localQuotes= quotlogic.createQuotations(provs.get(1),products,username);
+        quotlogic.sendExternalQuots(provs.get(0),products,username);
+        allQuotes.addAll(localQuotes);
+        //allQuotes.addAll(externalQuotes);
+        return allQuotes;
     }
 
     @Override

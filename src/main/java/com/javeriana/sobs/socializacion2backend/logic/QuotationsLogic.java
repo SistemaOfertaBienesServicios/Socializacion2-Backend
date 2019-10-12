@@ -12,6 +12,7 @@ import com.javeriana.sobs.socializacion2backend.dao.PersistenceDAO;
 import com.javeriana.sobs.socializacion2backend.model.Product;
 import com.javeriana.sobs.socializacion2backend.model.Provider;
 import com.javeriana.sobs.socializacion2backend.model.Quotation;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.WrapperQuots;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,36 +42,34 @@ public class QuotationsLogic {
     @Autowired
     private PersistenceDAO persistenceDAOImpl;
     
-    public List<Provider> getProvidersWithoutSystem() throws SQLException{
+    public List<List<Provider>> getProvidersClassified() throws SQLException{
+        List<List<Provider>> provs = new ArrayList<>();
         List<Provider> allProviders = persistenceDAOImpl.getProviders();
         List<Provider> providersWithoutS = new ArrayList<>();
-        allProviders.forEach((provider) -> {
-            if(!provider.isSystem()){
-                providersWithoutS.add(provider);
-            }
-        });
-        return providersWithoutS;
-    }
-    
-    public List<Provider> getProvidersWithSystem() throws SQLException{
-        List<Provider> allProviders = persistenceDAOImpl.getProviders();
         List<Provider> providersWithS = new ArrayList<>();
         allProviders.forEach((provider) -> {
             if(provider.isSystem()){
                 providersWithS.add(provider);
             }
+            else{
+                providersWithoutS.add(provider);
+            }
         });
-        return providersWithS;
+        provs.add(providersWithS);
+        provs.add(providersWithoutS);
+        return provs;
     }
 
-    public void sendExternalQuots(List<Product> products) {
+    public void sendExternalQuots(List<Provider> providers,List<Product> products, String username) {
+        WrapperQuots wrpQuo = new WrapperQuots(products,providers,username);
         String jsonStr;
         try {
-            jsonStr = Obj.writeValueAsString(products);
-            generatePOSTRequest(sendQuotationsEndpoint,jsonStr);
+            jsonStr = Obj.writeValueAsString(wrpQuo);
+            String response = generatePOSTRequest(sendQuotationsEndpoint,jsonStr);
         } catch (JsonProcessingException ex) {
             Logger.getLogger(QuotationsLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
     
     public static String generatePOSTRequest(String endpoint, String body) {
@@ -110,7 +109,7 @@ public class QuotationsLogic {
     }
 
     
-    public List<Quotation> createQuotations(List<Provider> providers, List<Product> products, String username) {
+    public List<Quotation> createQuotations(List<Provider> providers, List<Product> products, String username) throws SQLException {
         List<Quotation> quotations = new ArrayList<>();
         for(Provider prov : providers){
             Quotation quot = new Quotation();
@@ -124,6 +123,7 @@ public class QuotationsLogic {
             quot.setUsername(username);
             quotations.add(quot);
         }
+        
         return quotations;
     }
 }

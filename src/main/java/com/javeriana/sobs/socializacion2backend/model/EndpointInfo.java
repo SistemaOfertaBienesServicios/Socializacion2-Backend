@@ -5,8 +5,6 @@
  */
 package com.javeriana.sobs.socializacion2backend.model;
 
-import java.util.List;
-
 /**
  *
  * @author cristianmendi

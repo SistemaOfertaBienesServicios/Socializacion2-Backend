@@ -54,19 +54,29 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     @Override
     public Provider registerProvider(Provider newProvider) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.EndPointInfo (id, endpoint, endpointParameters) values (?, ?, ?)");
         long providerId = generateId();
-        stmtep.setLong(1, providerId);
-        stmtep.setString(2, newProvider.getEndpoint().getEndpoint());
-        stmtep.setString(3, newProvider.getEndpoint().getEndpointParameters());
-        stmtep.executeUpdate();
+        
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO sobs.Provider (id, name, system) values (?, ?, ?)");
         stmt.setLong(1, providerId);
         stmt.setString(2, newProvider.getName());
         stmt.setBoolean(3, newProvider.isSystem());
         stmt.executeUpdate();
         connection.close();
+        if (newProvider.isSystem()){
+            registerEndpoint(newProvider.getEndpoint(),providerId);
+        }
         return newProvider;
+    }
+    
+    public void registerEndpoint(EndpointInfo endpoint, long providerId) throws SQLException{
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.EndPointInfo (id, endpoint, endpointParameters,provider_id) values (?, ?, ?, ?)");
+        stmtep.setLong(1, providerId);
+        stmtep.setString(2, endpoint.getEndpoint());
+        stmtep.setString(3, endpoint.getEndpointParameters());
+        stmtep.setLong(4, providerId);
+        stmtep.executeUpdate();
+        connection.close();
     }
     
     
@@ -124,8 +134,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 
     @Override
     public boolean validateToken(String token) throws SQLException {
-        System.out.println("token: " + token);
-        return token.equals("valido");
+        return token.equals("rty678");
     }
 
     public List<Provider> getProviders() throws SQLException {

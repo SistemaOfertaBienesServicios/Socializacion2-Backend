@@ -20,6 +20,9 @@ import com.javeriana.sobs.socializacion2backend.model.Provider;
 import com.javeriana.sobs.socializacion2backend.model.Quotation;
 import com.javeriana.sobs.socializacion2backend.model.Role;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.LoginData;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.NewProviderWrapper;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.ProductWrapper;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.QuotationResultWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.QuotationsWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.ResponseWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.RoleWrapper;
@@ -65,11 +68,15 @@ public class SocializacionController extends BaseController {
     }
 
     @RequestMapping(path = "/register/{token}", method = RequestMethod.POST)
-    public ResponseEntity<?> registerProvider(@RequestBody Provider newProvider, @PathVariable("token") String token) {
+    public ResponseEntity<?> registerProvider(@RequestBody NewProviderWrapper newProvider, @PathVariable("token") String token) {
         try {
             boolean auth = socializacionServiceImpl.validateToken(token);
             if (auth) {
-                socializacionServiceImpl.registerProvider(newProvider);
+                Provider newProv = new Provider();
+                newProv.setName(newProvider.getName());
+                newProv.setSystem(newProvider.isSystem());
+                newProv.setEndpoint(newProvider.getEndpoint());
+                socializacionServiceImpl.registerProvider(newProv);
                 return new ResponseEntity<>(HttpStatus.CREATED);
             } else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -80,7 +87,7 @@ public class SocializacionController extends BaseController {
         }
     }
 
-    @RequestMapping(path = "/quote/{username}", method = RequestMethod.POST)
+    @RequestMapping(path = "/quote", method = RequestMethod.POST)
     public ResponseEntity<?> makeQuotes(@RequestBody QuotationsWrapper quotationData)  {
         try {
             List<Quotation> quotations = socializacionServiceImpl.makeQuotes(quotationData.getProducts(),quotationData.getUsername());
@@ -101,6 +108,7 @@ public class SocializacionController extends BaseController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
     
     @RequestMapping(value = "/quotations/{providerId}", method = RequestMethod.GET)
     public ResponseEntity<List<Quotation>> getQuotations(@PathVariable ("providerId") long providerId) throws SocializacionException {
@@ -111,4 +119,25 @@ public class SocializacionController extends BaseController {
             throw handleException(ex);
         }
     }
+    
+    @RequestMapping(path = "/pruebaEndp", method = RequestMethod.POST)
+    public ResponseEntity<?> pruebaEndp(@RequestBody List<ProductWrapper> products)  {
+        System.out.println("pruebaEndp");
+        for(ProductWrapper pw : products){
+            System.out.println(pw.toString());
+        }
+        QuotationResultWrapper qrw=  new QuotationResultWrapper(190000);
+        return new ResponseEntity<>(qrw, HttpStatus.OK);
+    }
+    
+    @RequestMapping(path = "/pruebaEndp2", method = RequestMethod.POST)
+    public ResponseEntity<?> pruebaEndp2(@RequestBody List<ProductWrapper> products)  {
+        System.out.println("pruebaEndp2");
+        for(ProductWrapper pw : products){
+            System.out.println(pw.toString());
+        }
+        QuotationResultWrapper qrw=  new QuotationResultWrapper(190000);
+        return new ResponseEntity<>(qrw, HttpStatus.OK);
+    }
+
 }
