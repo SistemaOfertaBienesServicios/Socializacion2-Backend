@@ -79,6 +79,21 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
     }
     
+    public List<Product> getProductsByProvider(long provider_id) throws SQLException{
+        List<Product> products = new ArrayList<>();
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        String consulta = "SELECT * FROM sobs.product Where provider_id = ? ";
+        PreparedStatement statement= connection.prepareStatement(consulta);
+        statement.setLong(1, provider_id);
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next()) {
+            Product p = new Product(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getLong("price"), resultSet.getLong("quantity"));
+            products.add(p);
+        }
+        connection.close();
+        return products;
+    }
+    
     
     
     @Override
@@ -87,6 +102,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         String consulta = "SELECT * FROM sobs.quotation Where providerId = ? ";
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement= connection.prepareStatement(consulta);
+        statement.setLong(1, providerId);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             List<Product> products = getQuotationProducts(resultSet.getLong("id"));
@@ -137,28 +153,36 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         return token.equals("rty678");
     }
 
+    @Override
     public List<Provider> getProviders() throws SQLException {
-        List<Provider> allRoles = new ArrayList<>();
+        List<Provider> providers = new ArrayList<>();
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("SELECT * FROM sobs.Provider;");
         while (resultSet.next()) {
             Provider provider = new Provider(resultSet.getLong("id"), resultSet.getString("name"), resultSet.getBoolean("system"));
+            provider.setProducts(getProductsByProvider(resultSet.getLong("id")));
             provider.setEndpoint(getEndpoint(provider.getId()));
-            allRoles.add(provider);
+            providers.add(provider);
         }
         connection.close();
-        return allRoles;
+        return providers;
     }
 
-    public EndpointInfo getEndpoint(long id) throws SQLException {
+    public EndpointInfo getEndpoint(long provider_id) throws SQLException {
         EndpointInfo endpoint = new EndpointInfo();
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("SELECT * FROM sobs.EndPointInfo;");
+        
+        
+        String consulta = "SELECT * FROM sobs.EndPointInfo where provider_id=?";
+        PreparedStatement statement= connection.prepareStatement(consulta);
+        statement.setLong(1, provider_id);
+        ResultSet resultSet = statement.executeQuery();
+        
         while (resultSet.next()) {
             endpoint = new EndpointInfo(resultSet.getLong("id"), resultSet.getString("endpoint"), resultSet.getString("endpointParameters"));
         }
+        connection.close();
         return endpoint;
     }
     
@@ -187,6 +211,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
             user = new User();
             user.setRole(resultSet.getString("role"));
         }
+        connection.close();
         return user;
         
 	}
@@ -291,6 +316,9 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         stmtep.executeUpdate();
         connection.close();
     }
+    
+    
+    
     
     
 }

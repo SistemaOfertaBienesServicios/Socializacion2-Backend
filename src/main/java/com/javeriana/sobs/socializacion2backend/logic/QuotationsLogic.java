@@ -74,6 +74,9 @@ public class QuotationsLogic {
     
     public static String generatePOSTRequest(String endpoint, String body) {
         try {
+            System.out.println("generatePOSTRequest");
+            System.out.println(endpoint);
+            System.out.println(body);
             URL obj = new URL(endpoint);
             HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
             postConnection.setRequestMethod("POST");

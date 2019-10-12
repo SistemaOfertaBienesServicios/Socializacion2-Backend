@@ -27,6 +27,7 @@ import com.javeriana.sobs.socializacion2backend.model.wrapper.QuotationsWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.ResponseWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.RoleWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.StatusInfo;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.WrapperExternalBody;
 import com.javeriana.sobs.socializacion2backend.service.SocializacionService;
 
 @Controller
@@ -121,9 +122,10 @@ public class SocializacionController extends BaseController {
     }
     
     @RequestMapping(path = "/pruebaEndp", method = RequestMethod.POST)
-    public ResponseEntity<?> pruebaEndp(@RequestBody List<ProductWrapper> products)  {
+    public ResponseEntity<?> pruebaEndp(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp");
-        for(ProductWrapper pw : products){
+        List<ProductEndpWrapper> products = web.getProducts();
+        for(ProductEndpWrapper pw : products){
             System.out.println(pw.toString());
         }
         QuotationResultWrapper qrw=  new QuotationResultWrapper(190000);
@@ -131,12 +133,13 @@ public class SocializacionController extends BaseController {
     }
     
     @RequestMapping(path = "/pruebaEndp2", method = RequestMethod.POST)
-    public ResponseEntity<?> pruebaEndp2(@RequestBody List<ProductWrapper> products)  {
+    public ResponseEntity<?> pruebaEndp2(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp2");
-        for(ProductWrapper pw : products){
+        List<ProductEndpWrapper> products = web.getProducts();
+        for(ProductEndpWrapper pw : products){
             System.out.println(pw.toString());
         }
-        QuotationResultWrapper qrw=  new QuotationResultWrapper(190000);
+        QuotationResultWrapper qrw=  new QuotationResultWrapper(40000);
         return new ResponseEntity<>(qrw, HttpStatus.OK);
     }
 
