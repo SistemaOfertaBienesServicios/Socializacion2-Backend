@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +36,8 @@ public class SocializacionController extends BaseController {
 
     @Autowired
     SocializacionService socializacionServiceImpl;
-
+    
+    @CrossOrigin
     @RequestMapping(value = "/roles", method = RequestMethod.GET)
     public ResponseEntity<List<Role>> getRoles() throws SocializacionException {
         try {
@@ -44,7 +46,8 @@ public class SocializacionController extends BaseController {
             throw handleException(ex);
         }
     }
-
+    
+    @CrossOrigin
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<ResponseWrapper> loginUser(@RequestBody LoginData loginData) throws SocializacionException {
         try {
@@ -58,6 +61,7 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    @CrossOrigin
     @RequestMapping(value = "/products/{providerId}", method = RequestMethod.PUT)
     public ResponseEntity<ResponseWrapper> createProducts(@PathVariable("providerId") String providerId, @RequestBody List<Product> products) throws SocializacionException {
         try {
@@ -68,6 +72,7 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    @CrossOrigin
     @RequestMapping(value = "/products", method = RequestMethod.GET)
     public ResponseEntity<ResponseWrapper> getProducts() throws SocializacionException {
         try {
@@ -77,7 +82,8 @@ public class SocializacionController extends BaseController {
             throw handleException(ex);
         }
     }
-
+    
+    @CrossOrigin
     @RequestMapping(path = "/register/{token}", method = RequestMethod.POST)
     public ResponseEntity<?> registerProvider(@RequestBody NewProviderWrapper newProvider, @PathVariable("token") String token) {
         try {
@@ -97,7 +103,8 @@ public class SocializacionController extends BaseController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
-
+    
+    @CrossOrigin
     @RequestMapping(path = "/quote", method = RequestMethod.POST)
     public ResponseEntity<?> makeQuotes(@RequestBody QuotationsWrapper quotationData)  {
         try {
@@ -109,6 +116,7 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    @CrossOrigin
     @RequestMapping(path = "/saveQuote", method = RequestMethod.POST)
     public ResponseEntity<?> saveQuotes(@RequestBody Quotation quotation)  {
         try {
@@ -120,7 +128,7 @@ public class SocializacionController extends BaseController {
         }
     }
 
-    
+    @CrossOrigin
     @RequestMapping(value = "/quotations/{providerId}", method = RequestMethod.GET)
     public ResponseEntity<List<Quotation>> getQuotations(@PathVariable ("providerId") long providerId) throws SocializacionException {
         try {
@@ -131,6 +139,7 @@ public class SocializacionController extends BaseController {
         }
     }
     
+    @CrossOrigin
     @RequestMapping(path = "/pruebaEndp", method = RequestMethod.POST)
     public ResponseEntity<?> pruebaEndp(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp");
@@ -142,6 +151,7 @@ public class SocializacionController extends BaseController {
         return new ResponseEntity<>(qrw, HttpStatus.OK);
     }
     
+    @CrossOrigin
     @RequestMapping(path = "/pruebaEndp2", method = RequestMethod.POST)
     public ResponseEntity<?> pruebaEndp2(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp2");
