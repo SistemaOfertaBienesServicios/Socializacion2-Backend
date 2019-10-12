@@ -24,6 +24,13 @@ public class Quotation {
         this.username = username;
         this.providerId = providerId;
     }
+    
+    public Quotation(long total, List<Product> products, String username, long providerId) {
+        this.total = total;
+        this.products = products;
+        this.username = username;
+        this.providerId = providerId;
+    }
 
     public long getProviderId() {
         return providerId;

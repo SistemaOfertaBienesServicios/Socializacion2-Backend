@@ -18,6 +18,7 @@ import javax.mail.internet.MimeMessage;
 
 import com.javeriana.sobs.socializacion2backend.model.Product;
 import com.javeriana.sobs.socializacion2backend.model.Quotation;
+import org.springframework.stereotype.Service;
 
 public class SocializacionMail {
 	private static String username = "wowpokemonwow@gmail.com";
@@ -33,8 +34,8 @@ public class SocializacionMail {
 		return format;
 	}
 
-	public static void sendEmail(String recipientEmail, String subjectEmail, Quotation quotation, String nameProvider) {
-
+	public static void sendEmail(String recipientEmail, Quotation quotation, String nameProvider) {
+                String subjectEmail = "Corización proveedor: "+nameProvider;
 		Properties props = new Properties();
 		props.put("mail.smtp.starttls.enable", "true");
 		props.put("mail.smtp.auth", "true");

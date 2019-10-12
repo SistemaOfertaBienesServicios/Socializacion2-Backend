@@ -12,6 +12,7 @@ import com.javeriana.sobs.socializacion2backend.dao.PersistenceDAO;
 import com.javeriana.sobs.socializacion2backend.model.Product;
 import com.javeriana.sobs.socializacion2backend.model.Provider;
 import com.javeriana.sobs.socializacion2backend.model.Quotation;
+import com.javeriana.sobs.socializacion2backend.model.wrapper.QuotationWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.WrapperQuots;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,8 +61,8 @@ public class QuotationsLogic {
         return provs;
     }
 
-    public void sendExternalQuots(List<Provider> providers,List<Product> products, String username) {
-        WrapperQuots wrpQuo = new WrapperQuots(products,providers,username);
+    public void sendExternalQuots(List<Provider> providers,List<Product> products, String username, String email) {
+        WrapperQuots wrpQuo = new WrapperQuots(products,providers,username, email);
         String jsonStr;
         try {
             jsonStr = Obj.writeValueAsString(wrpQuo);
@@ -88,7 +89,6 @@ public class QuotationsLogic {
             os.close();
             int responseCode = postConnection.getResponseCode();
             System.out.println("POST Response Code :  " + responseCode);
-            System.out.println("POST Response Message : " + postConnection.getResponseMessage());
             if (responseCode == HttpURLConnection.HTTP_CREATED) { //success
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         postConnection.getInputStream()));
@@ -112,18 +112,21 @@ public class QuotationsLogic {
     }
 
     
-    public List<Quotation> createQuotations(List<Provider> providers, List<Product> products, String username) throws SQLException {
-        List<Quotation> quotations = new ArrayList<>();
+    public List<QuotationWrapper> createQuotations(List<Provider> providers, List<Product> products, String username, String email) throws SQLException {
+        List<QuotationWrapper> quotations = new ArrayList<>();
         for(Provider prov : providers){
-            Quotation quot = new Quotation();
-            quot.setProducts(products);
+            List<Product> productsInfo = persistenceDAOImpl.getProductsInfo(products,prov.getId());
+            QuotationWrapper quot = new QuotationWrapper();
+            quot.setProducts(productsInfo);
             long total=0;
-            for(Product product : products){
+            for(Product product : productsInfo){
                 total+=product.getPrice()*product.getQuantity();
             }
             quot.setTotal(total);
             quot.setProviderId(prov.getId());
             quot.setUsername(username);
+            quot.setEmail(email);
+            quot.setProviderName(prov.getName());
             quotations.add(quot);
         }
         
