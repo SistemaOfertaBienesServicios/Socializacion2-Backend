@@ -18,4 +18,6 @@ public interface PersistenceDAO {
     public boolean updateOrCreateProviderProducts(String provider, List<Product> products)  throws SQLException;
     public Quotation saveQuotation(Quotation newQuotation) throws SQLException;
     public List<Quotation> getQuotations(long providerId) throws SQLException;
+    public List<Product> getProducts() throws SQLException;
+    public long consultIdFromProvider(String name) throws SQLException;
 }

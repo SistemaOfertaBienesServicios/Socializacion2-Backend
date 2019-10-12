@@ -66,6 +66,16 @@ public class SocializacionController extends BaseController {
             throw handleException(ex);
         }
     }
+    
+    @RequestMapping(value = "/products", method = RequestMethod.GET)
+    public ResponseEntity<ResponseWrapper> getProducts() throws SocializacionException {
+        try {
+        	List<Product> products = socializacionServiceImpl.getProducts();
+            return new ResponseEntity<>(generateResponseWrapper(products), HttpStatus.OK);
+        } catch (Exception ex) {
+            throw handleException(ex);
+        }
+    }
 
     @RequestMapping(path = "/register/{token}", method = RequestMethod.POST)
     public ResponseEntity<?> registerProvider(@RequestBody NewProviderWrapper newProvider, @PathVariable("token") String token) {

@@ -38,6 +38,10 @@ public class SocializacionServiceImpl implements SocializacionService {
 		if (!username.isEmpty() && !password.isEmpty()) {
 			User validateUser = persistenceDAOImpl.validateLoginUser(username, password);
 			if (validateUser != null) {
+				if(validateUser.getRole().contains("Proveedor")) {
+					Long id = persistenceDAOImpl.consultIdFromProvider(username);
+					return new RoleWrapper(validateUser.getRole(), id);
+				}
 				return new RoleWrapper(validateUser.getRole());
 			}
 			return null;
@@ -91,5 +95,10 @@ public class SocializacionServiceImpl implements SocializacionService {
     public List<Quotation> getQuotations(long providerId) throws SQLException {
         return persistenceDAOImpl.getQuotations(providerId);
     }
+
+	@Override
+	public List<Product> getProducts() throws SQLException {
+		return persistenceDAOImpl.getProducts();
+	}
 
 }
