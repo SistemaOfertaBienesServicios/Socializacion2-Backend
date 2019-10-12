@@ -131,7 +131,7 @@ public class SocializacionController extends BaseController {
         System.out.println(quotation);
         Quotation newQuotation = new Quotation(quotation.getTotal(), quotation.getProducts(), quotation.getUsername(), quotation.getProviderId());
         try {
-            Quotation storedQuotation = socializacionServiceImpl.saveQuotation(newQuotation,quotation.getEmail(),quotation.getProviderName());
+            Quotation storedQuotation = socializacionServiceImpl.saveQuotation(newQuotation,quotation.getEmail(),quotation.getProviderName(),true);
             return new ResponseEntity<>(storedQuotation,HttpStatus.CREATED);
         } catch (SQLException ex) {
             Logger.getLogger(SocializacionController.class.getName()).log(Level.SEVERE, null, ex);

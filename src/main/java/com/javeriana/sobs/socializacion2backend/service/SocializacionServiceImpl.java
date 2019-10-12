@@ -82,7 +82,7 @@ public class SocializacionServiceImpl implements SocializacionService {
         quotlogic.sendExternalQuots(provs.get(0), products, user.getUsername(), user.getEmail());
         for (QuotationWrapper quote : localQuotes) {
             Quotation qu = new Quotation(quote.getTotal(), quote.getProducts(), quote.getUsername(), quote.getProviderId());
-            saveQuotation(qu, user.getEmail(), quote.getProviderName());
+            saveQuotation(qu, user.getEmail(), quote.getProviderName(),false);
             System.out.println("pppp");
             System.out.println(qu);
             allQuotes.add(qu);
@@ -91,10 +91,10 @@ public class SocializacionServiceImpl implements SocializacionService {
     }
 
     @Override
-    public Quotation saveQuotation(Quotation quotation, String email, String nameProvider) throws SQLException {
+    public Quotation saveQuotation(Quotation quotation, String email, String nameProvider, boolean external) throws SQLException {
         System.out.println("quotation");
         System.out.println(quotation.toString());
-        SocializacionMail.sendEmail(email, quotation, nameProvider, true);
+        SocializacionMail.sendEmail(email, quotation, nameProvider, !external);
         return persistenceDAOImpl.saveQuotation(quotation);
     }
 

@@ -125,19 +125,20 @@ public class QuotationsLogic {
         List<QuotationWrapper> quotations = new ArrayList<>();
         for(Provider prov : providers){
             List<Product> productsInfo = prov.getProducts();
+            List<String> uniqueprod = new ArrayList<>();
             QuotationWrapper quot = new QuotationWrapper();
             quot.setProducts(productsInfo);
             long total=0;
             for(int i=0; i<products.size();i++){
                 for(Product prod: productsInfo){
-                    if(prod.getName().equals(products.get(i).getName())){
+                    if(prod.getName().equals(products.get(i).getName()) && !uniqueprod.contains(prod.getName())){
+                        uniqueprod.add(prod.getName());
                         products.get(i).setPrice(prod.getPrice());
                         total+=products.get(i).getPrice()*products.get(i).getQuantity();
                         System.out.println("price");
                         System.out.println(products.get(i).getPrice());
                         System.out.println("total");
                         System.out.println(total);
-                        
                     }
                 }
                 System.out.println("products.get(i)");

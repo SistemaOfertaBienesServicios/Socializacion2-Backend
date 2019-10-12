@@ -22,7 +22,7 @@ public interface SocializacionService {
     public List<Quotation> makeQuotes(List<Product> products,String username, String email) throws SQLException;
     public RoleWrapper validateLoginUser(String username, String password) throws SQLException, SocializacionException;
     public StatusInfo updateOrCreateProviderProducts(long providerId, List<Product> products) throws SocializacionException, SQLException;
-    public Quotation saveQuotation(Quotation quotation,String email, String nameProvider) throws SQLException;
+    public Quotation saveQuotation(Quotation quotation,String email, String nameProvider,boolean external) throws SQLException;
     public List<Quotation> getQuotations(long providerId) throws SQLException;
     public List<Product> getProducts() throws SQLException;
     public User getUser(String usename) throws SQLException;
