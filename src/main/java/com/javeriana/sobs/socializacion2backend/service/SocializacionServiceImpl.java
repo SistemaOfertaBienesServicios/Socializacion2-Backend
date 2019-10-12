@@ -62,7 +62,7 @@ public class SocializacionServiceImpl implements SocializacionService {
             throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
         }
     }
-
+	
     @Override
     public Provider registerProvider(Provider newProvider) throws SQLException {
         return persistenceDAOImpl.registerProvider(newProvider);

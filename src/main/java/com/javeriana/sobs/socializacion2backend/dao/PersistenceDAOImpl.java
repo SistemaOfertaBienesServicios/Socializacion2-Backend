@@ -54,7 +54,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     @Override
     public Provider registerProvider(Provider newProvider) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        long providerId = generateId();
+        long providerId = generatelongUUIDIdentifier();
 
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO sobs.Provider (id, name, system) values (?, ?, ?)");
         stmt.setLong(1, providerId);
@@ -182,15 +182,26 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         return endpoint;
     }
-
-    public long generateId() {
-        final UUID uid = UUID.randomUUID();
-        final ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
-        buffer.putLong(uid.getLeastSignificantBits());
-        buffer.putLong(uid.getMostSignificantBits());
-        final BigInteger bi = new BigInteger(buffer.array());
-        long identifier = bi.longValue();
-        return identifier;
+    
+    public Provider getProviderByName(String name) {
+    	Provider provider = null;
+    	try {
+    		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.Provider WHERE name=?");
+            statement.setString(1, name);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+            	provider = new Provider();
+            	provider.setId(resultSet.getLong("id"));
+            	provider.setSystem(resultSet.getBoolean("system"));
+            	provider.setName(resultSet.getString("name"));
+            }
+            connection.close();
+            return provider;
+    	} catch (Exception e) {
+    		System.out.println(e.toString());
+    	}
+    	return provider;
     }
 
     @Override
@@ -203,11 +214,19 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         User user = null;
         while (resultSet.next()) {
             user = new User();
-            String roleVerify = resultSet.getString("role");
-            if(roleVerify.contains("Proveedor")) {
-            	roleVerify += "."+Long.toString(consultIdFromProvider(username));
+            user.setRole(resultSet.getString("role"));
+            user.setUsername(resultSet.getString("username"));
+            user.setPassword(resultSet.getString("password"));
+            user.setEmail(resultSet.getString("email"));
+            String role = resultSet.getString("role");
+            if (role.contains("Proveedor")) {
+            	PreparedStatement statement2 = connection.prepareStatement("SELECT * FROM sobs.Provider WHERE name=?");
+                statement2.setString(1, resultSet.getString("username"));
+                ResultSet resultSet2 = statement2.executeQuery();
+            	while (resultSet2.next()) {
+            		user.setId(resultSet2.getLong("id"));
+                }
             }
-            user.setRole(roleVerify);
         }
         connection.close();
         return user;
@@ -215,12 +234,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     }
 
     private long generatelongUUIDIdentifier() {
-        final UUID uid = UUID.randomUUID();
-        final ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
-        buffer.putLong(uid.getLeastSignificantBits());
-        buffer.putLong(uid.getMostSignificantBits());
-        final BigInteger bi = new BigInteger(buffer.array());
-        return bi.longValue();
+    	return (new java.util.Random().nextLong() % (999999L - -999999L)) + -999999L;
     }
     
     @Override
@@ -277,7 +291,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public Quotation saveQuotation(Quotation newQuotation) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.Quotation (id, total, Provider_id,User_username) values (?, ?, ?, ?)");
-        long quotationId = generateId();
+        long quotationId = generatelongUUIDIdentifier();
         stmtep.setLong(1, quotationId);
         stmtep.setLong(2, newQuotation.getTotal());
         stmtep.setLong(3, newQuotation.getProviderId());
@@ -286,9 +300,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         List<Product> prods = newQuotation.getProducts();
         for (Product product : prods) {
-        System.out.println("productproduct");
-        System.out.println(product);
-            long prodId=generateId();
+            long prodId=generatelongUUIDIdentifier();
             product.setId(prodId);
             saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());
             saveProductQuotation((int) product.getQuantity(), quotationId, product.getId());
@@ -300,7 +312,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public void saveProductQuotation(int quantity, long quotation_id, long product_id) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.product_quotation (quantity, quotation_id, product_id) values (?, ?, ?)");
-        long quotationId = generateId();
+        long quotationId = generatelongUUIDIdentifier();
         stmtep.setInt(1, quantity);
         stmtep.setLong(2, quotation_id);
         stmtep.setLong(3, product_id);
@@ -311,7 +323,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     public void saveProduct(long id, String name, long price, long quantity, long provider_id) throws SQLException {
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement stmtep = connection.prepareStatement("INSERT INTO sobs.product (id, name, price,quantity,provider_id) values (?, ?, ?, ?,?)");
-        long quotationId = generateId();
+        long quotationId = generatelongUUIDIdentifier();
         stmtep.setLong(1, id);
         stmtep.setString(2, name);
         stmtep.setLong(3, price);
@@ -369,6 +381,33 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         return user;
     }
     
+    public Product getProductByProvAndname(long providerId, String productName) throws SQLException {
+        Product product= new Product();
+        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.Product WHERE name=? and provider_id=?");
+        statement.setString(1, productName);
+        statement.setLong(2, providerId);
+        ResultSet resultSet = statement.executeQuery();
+        Long id = 0L;
+        while (resultSet.next()) {
+            product.setId(resultSet.getLong("id"));
+            product.setPrice(resultSet.getLong("price"));
+            product.setName(productName);
+            product.setQuantity(resultSet.getLong("quantity"));
+        }
+        connection.close();
+        return product;
+    }
+
+    @Override
+    public List<Product> getProductsInfo(List<Product> products, long provider_Id) throws SQLException {
+        List<Product> productsInfo = new ArrayList<>();
+        for (Product product: products){
+            Product tempProd= getProductByProvAndname(provider_Id,product.getName());
+            productsInfo.add(tempProd);
+        }
+        return productsInfo;
+    }
     
 
     

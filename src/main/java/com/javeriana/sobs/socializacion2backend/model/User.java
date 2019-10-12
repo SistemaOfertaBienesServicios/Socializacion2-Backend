@@ -18,9 +18,24 @@ public class User {
     private String role;
     private String password;
     private List<Quotation> quotations;
+    private long id;
     
 	public User() {
 		super();
+	}
+	
+	/**
+	 * @return the id
+	 */
+	public long getId() {
+		return id;
+	}
+
+	/**
+	 * @param username the id to set
+	 */
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	/**
