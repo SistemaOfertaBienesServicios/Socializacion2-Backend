@@ -27,5 +27,4 @@ public interface SocializacionService {
     public List<Product> getProducts() throws SQLException;
     public User getUser(String usename) throws SQLException;
 
-    public List<Product> getProductsInfo(List<Product> products,long provider_Id) throws SQLException;
 }
