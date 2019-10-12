@@ -286,6 +286,8 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
         List<Product> prods = newQuotation.getProducts();
         for (Product product : prods) {
+        System.out.println("productproduct");
+        System.out.println(product);
             long prodId=generateId();
             product.setId(prodId);
             saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());
@@ -367,37 +369,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         return user;
     }
     
-    public Product getProductByProvAndname(long providerId, String productName) throws SQLException {
-        Product product= new Product();
-        Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.Product WHERE name=? and provider_id=?");
-        statement.setString(1, productName);
-        statement.setLong(2, providerId);
-        ResultSet resultSet = statement.executeQuery();
-        Long id = 0L;
-        while (resultSet.next()) {
-            product.setId(resultSet.getLong("id"));
-            product.setPrice(resultSet.getLong("price"));
-            product.setName(productName);
-            product.setQuantity(resultSet.getLong("quantity"));
-        }
-        connection.close();
-        System.out.println("prod. consulta");
-        System.out.println(product);
-        return product;
-    }
-
-    @Override
-    public List<Product> getProductsInfo(List<Product> products, long provider_Id) throws SQLException {
-        List<Product> productsInfo = new ArrayList<>();
-        for (Product product: products){
-            System.out.println("product");
-            System.out.println(product);
-            Product tempProd= getProductByProvAndname(provider_Id,product.getName());
-            productsInfo.add(tempProd);
-        }
-        return productsInfo;
-    }
+    
 
     
 

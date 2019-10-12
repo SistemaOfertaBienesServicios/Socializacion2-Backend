@@ -43,17 +43,26 @@ public class QuotationsLogic {
     @Autowired
     private PersistenceDAO persistenceDAOImpl;
     
-    public List<List<Provider>> getProvidersClassified() throws SQLException{
+    public List<List<Provider>> getProvidersClassified(List<Product> products) throws SQLException{
         List<List<Provider>> provs = new ArrayList<>();
         List<Provider> allProviders = persistenceDAOImpl.getProviders();
         List<Provider> providersWithoutS = new ArrayList<>();
         List<Provider> providersWithS = new ArrayList<>();
         allProviders.forEach((provider) -> {
-            if(provider.isSystem()){
-                providersWithS.add(provider);
+            boolean allProds= true;
+            for(Product product : products){
+                if(!provider.inCatalog(product.getName())){
+                    allProds=false;
+                    break;
+                }
             }
-            else{
-                providersWithoutS.add(provider);
+            if(allProds){
+                if(provider.isSystem()){
+                    providersWithS.add(provider);
+                }
+                else{
+                    providersWithoutS.add(provider);
+                }
             }
         });
         provs.add(providersWithS);
@@ -115,18 +124,28 @@ public class QuotationsLogic {
     public List<QuotationWrapper> createQuotations(List<Provider> providers, List<Product> products, String username, String email) throws SQLException {
         List<QuotationWrapper> quotations = new ArrayList<>();
         for(Provider prov : providers){
-            List<Product> productsInfo = persistenceDAOImpl.getProductsInfo(products,prov.getId());
+            List<Product> productsInfo = prov.getProducts();
             QuotationWrapper quot = new QuotationWrapper();
             quot.setProducts(productsInfo);
             long total=0;
-            for(Product product : productsInfo){
-                total+=product.getPrice()*product.getQuantity();
+            for(int i=0; i<products.size();i++){
+                for(Product prod: productsInfo){
+                    if(prod.getName().equals(products.get(i).getName())){
+                        products.get(i).setPrice(prod.getPrice());
+                        total+=products.get(i).getPrice()*products.get(i).getQuantity();
+                    }
+                }
+                System.out.println("products.get(i)");
+                System.out.println(products.get(i));
             }
             quot.setTotal(total);
             quot.setProviderId(prov.getId());
             quot.setUsername(username);
             quot.setEmail(email);
             quot.setProviderName(prov.getName());
+            quot.setProducts(products);
+            System.out.println("quot");
+            System.out.println(quot);
             quotations.add(quot);
         }
         

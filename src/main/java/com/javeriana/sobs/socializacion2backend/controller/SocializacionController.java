@@ -25,6 +25,7 @@ import com.javeriana.sobs.socializacion2backend.model.Product;
 import com.javeriana.sobs.socializacion2backend.model.Provider;
 import com.javeriana.sobs.socializacion2backend.model.Quotation;
 import com.javeriana.sobs.socializacion2backend.model.Role;
+import com.javeriana.sobs.socializacion2backend.model.User;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.LoginData;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.NewProviderWrapper;
 import com.javeriana.sobs.socializacion2backend.model.wrapper.ProductWrapper;
@@ -114,7 +115,8 @@ public class SocializacionController extends BaseController {
     @RequestMapping(path = "/quote", method = RequestMethod.POST)
     public ResponseEntity<?> makeQuotes(@RequestBody QuotationWrapper quotationData)  {
         try {
-            List<Quotation> quotations = socializacionServiceImpl.makeQuotes(quotationData.getProducts(),quotationData.getUsername(),quotationData.getEmail());
+            User u = socializacionServiceImpl.getUser(quotationData.getUsername());
+            List<Quotation> quotations = socializacionServiceImpl.makeQuotes(quotationData.getProducts(),quotationData.getUsername(),u.getEmail());
             return new ResponseEntity<>(quotations,HttpStatus.CREATED);
         } catch (SQLException ex) {
             Logger.getLogger(SocializacionController.class.getName()).log(Level.SEVERE, null, ex);
@@ -153,10 +155,7 @@ public class SocializacionController extends BaseController {
     public ResponseEntity<?> pruebaEndp(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp");
         List<ProductEndpWrapper> products = web.getProducts();
-        for(ProductEndpWrapper pw : products){
-            System.out.println(pw.toString());
-        }
-        QuotationResultWrapper qrw=  new QuotationResultWrapper(19999);
+        QuotationResultWrapper qrw=  new QuotationResultWrapper(199999);
         return new ResponseEntity<>(qrw, HttpStatus.CREATED);
     }
     
@@ -165,10 +164,7 @@ public class SocializacionController extends BaseController {
     public ResponseEntity<?> pruebaEndp2(@RequestBody WrapperExternalEndp web)  {
         System.out.println("pruebaEndp2");
         List<ProductEndpWrapper> products = web.getProducts();
-        for(ProductEndpWrapper pw : products){
-            System.out.println(pw.toString());
-        }
-        QuotationResultWrapper qrw=  new QuotationResultWrapper(40000);
+        QuotationResultWrapper qrw=  new QuotationResultWrapper(400000);
         return new ResponseEntity<>(qrw, HttpStatus.CREATED);
     }
     
