@@ -80,6 +80,11 @@ public class QuotationWrapper {
     public void setProducts(List<Product> products) {
         this.products = products;
     }
+
+    @Override
+    public String toString() {
+        return "QuotationWrapper{" + "id=" + id + ", total=" + total + ", products=" + products + ", username=" + username + ", providerId=" + providerId + ", email=" + email + ", providerName=" + providerName + '}';
+    }
     
 
 }

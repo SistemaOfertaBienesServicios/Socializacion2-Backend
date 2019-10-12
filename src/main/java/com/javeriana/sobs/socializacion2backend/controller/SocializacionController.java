@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -119,6 +120,8 @@ public class SocializacionController extends BaseController {
     @CrossOrigin
     @RequestMapping(path = "/saveQuote", method = RequestMethod.POST)
     public ResponseEntity<?> saveQuotes(@RequestBody QuotationWrapper quotation)  {
+        System.out.println("saveQuote");
+        System.out.println(quotation);
         Quotation newQuotation = new Quotation(quotation.getTotal(), quotation.getProducts(), quotation.getUsername(), quotation.getProviderId());
         try {
             Quotation storedQuotation = socializacionServiceImpl.saveQuotation(newQuotation,quotation.getEmail(),quotation.getProviderName());

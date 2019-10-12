@@ -30,43 +30,40 @@ public class SocializacionServiceImpl implements SocializacionService {
     @Autowired
     private QuotationsLogic quotlogic;
 
-    @Override
-    public List<Role> getRoles() throws SQLException {
-        return persistenceDAOImpl.getRoles();
-    }
 
-    @Override
-    public RoleWrapper validateLoginUser(String username, String password) throws SQLException, SocializacionException {
-        if (!username.isEmpty() && !password.isEmpty()) {
-            User validateUser = persistenceDAOImpl.validateLoginUser(username, password);
-            if (validateUser != null) {
-                if (validateUser.getRole().contains("Proveedor")) {
-                    Long id = persistenceDAOImpl.consultIdFromProvider(username);
-                    return new RoleWrapper(validateUser.getRole(), id);
-                }
-                return new RoleWrapper(validateUser.getRole());
-            }
-            return null;
-        } else {
-            throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
-        }
+	@Override
+	public List<Role> getRoles() throws SQLException {
+		return persistenceDAOImpl.getRoles();
+	}
 
-    }
+	@Override
+	public RoleWrapper validateLoginUser(String username, String password) throws SQLException, SocializacionException {
+		if (!username.isEmpty() && !password.isEmpty()) {
+			User validateUser = persistenceDAOImpl.validateLoginUser(username, password);
+			if (validateUser != null) {
+				return new RoleWrapper(validateUser.getRole());
+			}
+			return null;
+		} else {
+			throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
+		}
 
-    @Override
-    public StatusInfo updateOrCreateProviderProducts(String username, List<Product> products) throws SocializacionException, SQLException {
-        if (!username.isEmpty() && !products.isEmpty()) {
-            boolean response = persistenceDAOImpl.updateOrCreateProviderProducts(username, products);
-            if (!response) {
-                throw new SocializacionException("Bad request processing!!", SocializacionErrorCode.BAD_REQUEST);
-            }
-            StatusInfo status = new StatusInfo("Validate Request");
-            return status;
-        } else {
-            throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
-        }
-    }
+	}
 
+	@Override
+	public StatusInfo updateOrCreateProviderProducts(String username, List<Product> products) throws SocializacionException, SQLException{
+		if (!username.isEmpty() && !products.isEmpty()) {
+			boolean response = persistenceDAOImpl.updateOrCreateProviderProducts(username, products);
+			if (!response) {
+				throw new SocializacionException("Bad request processing!!", SocializacionErrorCode.BAD_REQUEST);
+			}
+			StatusInfo status = new StatusInfo("Validate Request");
+			return status;
+		} else {
+			throw new SocializacionException("Username or Password is empty", SocializacionErrorCode.INVALID_ARGUMENTS);
+		}
+	}
+	
     @Override
     public Provider registerProvider(Provider newProvider) throws SQLException {
         return persistenceDAOImpl.registerProvider(newProvider);
