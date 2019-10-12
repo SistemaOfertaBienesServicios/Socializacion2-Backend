@@ -38,10 +38,6 @@ public class SocializacionServiceImpl implements SocializacionService {
 		if (!username.isEmpty() && !password.isEmpty()) {
 			User validateUser = persistenceDAOImpl.validateLoginUser(username, password);
 			if (validateUser != null) {
-				if(validateUser.getRole().contains("Proveedor")) {
-					Long id = persistenceDAOImpl.consultIdFromProvider(username);
-					return new RoleWrapper(validateUser.getRole(), id);
-				}
 				return new RoleWrapper(validateUser.getRole());
 			}
 			return null;

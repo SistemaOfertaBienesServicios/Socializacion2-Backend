@@ -206,7 +206,11 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         User user = null;
         while (resultSet.next()) {
             user = new User();
-            user.setRole(resultSet.getString("role"));
+            String roleVerify = resultSet.getString("role");
+            if(roleVerify.contains("Proveedor")) {
+            	roleVerify = Long.toString(consultIdFromProvider(username))+".Proveedor";
+            }
+            user.setRole(roleVerify);
         }
         connection.close();
         return user;
@@ -222,8 +226,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         return bi.longValue();
 	}
 	
-	@Override
-	public long consultIdFromProvider(String name) throws SQLException {
+	private long consultIdFromProvider(String name) throws SQLException {
 		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement = connection.prepareStatement("SELECT id FROM sobs.Provider WHERE name=?");
         statement.setString(1, name);
@@ -346,9 +349,5 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         }
         return products;
 	}
-    
-    
-    
-    
     
 }
