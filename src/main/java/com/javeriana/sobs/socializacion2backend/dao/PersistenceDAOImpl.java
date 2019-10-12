@@ -208,7 +208,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
             user = new User();
             String roleVerify = resultSet.getString("role");
             if(roleVerify.contains("Proveedor")) {
-            	roleVerify = Long.toString(consultIdFromProvider(username))+".Proveedor";
+            	roleVerify += "."+Long.toString(consultIdFromProvider(username));
             }
             user.setRole(roleVerify);
         }
