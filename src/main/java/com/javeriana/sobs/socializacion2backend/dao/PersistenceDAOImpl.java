@@ -79,6 +79,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         connection.close();
     }
     
+
     public List<Product> getProductsByProvider(long provider_id) throws SQLException{
         List<Product> products = new ArrayList<>();
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
@@ -94,8 +95,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         return products;
     }
     
-    
-    
+
     @Override
     public List<Quotation> getQuotations(long providerId) throws SQLException {
         List<Quotation> quotations = new ArrayList<>();
@@ -186,9 +186,6 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         return endpoint;
     }
     
-    
-    
-
     public long generateId() {
         final UUID uid = UUID.randomUUID();
         final ByteBuffer buffer = ByteBuffer.wrap(new byte[16]);
@@ -225,7 +222,8 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         return bi.longValue();
 	}
 	
-	private long consultIdFromProvider(String name) throws SQLException {
+	@Override
+	public long consultIdFromProvider(String name) throws SQLException {
 		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement = connection.prepareStatement("SELECT id FROM sobs.Provider WHERE name=?");
         statement.setString(1, name);
@@ -289,7 +287,8 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         for(Product product: prods){
             saveProductQuotation((int) product.getQuantity() , newQuotation.getId(), product.getId());
             saveProduct(product.getId(), product.getName(), product.getPrice(), product.getQuantity(), newQuotation.getProviderId());        
-        }       
+        }     
+        connection.close();
         return newQuotation;
     }
 
@@ -316,6 +315,37 @@ public class PersistenceDAOImpl implements PersistenceDAO {
         stmtep.executeUpdate();
         connection.close();
     }
+    
+    private boolean checkRepeatedName(String productName, List<String> products) {
+    	for (String product : products) {
+			if(product.indexOf(productName) != -1) {
+				return true;
+			}
+		}
+    	return false;
+    }
+
+	@Override
+	public List<Product> getProducts() throws SQLException {
+		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
+        PreparedStatement statement = connection.prepareStatement("SELECT * FROM sobs.Product");
+        ResultSet resultSet = statement.executeQuery();
+        List<Product> products = new ArrayList<>();
+        List<String> productsName = new ArrayList<>();
+        while (resultSet.next()) {
+        	String productName = resultSet.getString("name");
+        	if(!checkRepeatedName(productName, productsName)) {
+        		Product product = new Product();
+            	product.setId(Long.parseLong(resultSet.getString("id")));
+            	product.setName(resultSet.getString("name"));
+            	product.setPrice(Long.parseLong(resultSet.getString("price")));
+            	product.setQuantity(Long.parseLong(resultSet.getString("quantity")));
+            	products.add(product);
+            	productsName.add(productName);
+        	}
+        }
+        return products;
+	}
     
     
     
