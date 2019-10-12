@@ -99,14 +99,14 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     @Override
     public List<Quotation> getQuotations(long providerId) throws SQLException {
         List<Quotation> quotations = new ArrayList<>();
-        String consulta = "SELECT * FROM sobs.quotation Where providerId = ? ";
+        String consulta = "SELECT * FROM sobs.quotation Where provider_id = ? ";
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement= connection.prepareStatement(consulta);
         statement.setLong(1, providerId);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             List<Product> products = getQuotationProducts(resultSet.getLong("id"));
-            Quotation quotation = new Quotation(resultSet.getLong("id"), resultSet.getLong("total"), products, resultSet.getString("username"),resultSet.getLong("providerId"));
+            Quotation quotation = new Quotation(resultSet.getLong("id"), resultSet.getLong("total"), products, resultSet.getString("username"),resultSet.getLong("provider_id"));
             quotations.add(quotation);
         }
         connection.close();
@@ -240,13 +240,12 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 	}
 
 	@Override
-	public boolean updateOrCreateProviderProducts(String provider, List<Product> products)  throws SQLException {
+	public boolean updateOrCreateProviderProducts(long providerId, List<Product> products)  throws SQLException {
 		Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
-		Long idProvider = consultIdFromProvider(provider);
 		for(Product product : products) {
 			PreparedStatement statementConsult = connection.prepareStatement("SELECT * FROM sobs.Product WHERE name=? AND Provider_id=?");
 			statementConsult.setString(1, product.getName());
-			statementConsult.setLong(2, idProvider);
+			statementConsult.setLong(2, providerId);
 	        ResultSet resultSet = statementConsult.executeQuery();
 	        
 	        boolean validateExistingProduct = false;
@@ -256,7 +255,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 	        	statementUpdate.setLong(1, product.getPrice());
 	        	statementUpdate.setLong(2, product.getQuantity());
 	        	statementUpdate.setString(3, product.getName());
-	        	statementUpdate.setLong(4, idProvider);
+	        	statementUpdate.setLong(4, providerId);
 	        	statementUpdate.execute();
 	        }
 	       
@@ -266,7 +265,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
 	        	statementUpdate.setString(2, product.getName());
 	        	statementUpdate.setLong(3, product.getPrice());
 	        	statementUpdate.setLong(4, product.getQuantity());
-	        	statementUpdate.setLong(5, idProvider);
+	        	statementUpdate.setLong(5, providerId);
 	        	statementUpdate.execute();
 	        }
 		}
