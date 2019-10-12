@@ -99,14 +99,14 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     @Override
     public List<Quotation> getQuotations(long providerId) throws SQLException {
         List<Quotation> quotations = new ArrayList<>();
-        String consulta = "SELECT * FROM sobs.quotation Where providerId = ? ";
+        String consulta = "SELECT * FROM sobs.quotation Where provider_id = ? ";
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement= connection.prepareStatement(consulta);
         statement.setLong(1, providerId);
         ResultSet resultSet = statement.executeQuery();
         while (resultSet.next()) {
             List<Product> products = getQuotationProducts(resultSet.getLong("id"));
-            Quotation quotation = new Quotation(resultSet.getLong("id"), resultSet.getLong("total"), products, resultSet.getString("username"),resultSet.getLong("providerId"));
+            Quotation quotation = new Quotation(resultSet.getLong("id"), resultSet.getLong("total"), products, resultSet.getString("user_username"),resultSet.getLong("provider_id"));
             quotations.add(quotation);
         }
         connection.close();
@@ -115,7 +115,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     
     public List<Product> getQuotationProducts(long quotationId) throws SQLException {
         List<Product> products = new ArrayList<>();
-        String consulta = "SELECT product_id,quantity FROM sobs.product_quotation Where quotation_id = ? ";
+        String consulta = "SELECT product_id,quantity FROM sobs.product_quotation Where Quotation_id = ? ";
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement= connection.prepareStatement(consulta);
         statement.setLong(1, quotationId);
@@ -133,7 +133,7 @@ public class PersistenceDAOImpl implements PersistenceDAO {
     
     public Product getProductbyId(long product_id, long quantity) throws SQLException {
         Product product= new Product();
-        String consulta = "SELECT * FROM sobs.product Where product_id = ? ";
+        String consulta = "SELECT * FROM sobs.product Where id = ? ";
         Connection connection = DriverManager.getConnection(urlPostgresConnection, userPostgresConnection, passwordPostgresConnection);
         PreparedStatement statement= connection.prepareStatement(consulta);
         statement.setLong(1, product_id);
